@@ -1,9 +1,33 @@
 body {
-
+  background-color: #F5F5F5 !important;
 }
 
-.exampleSearch {
+:root {
+  --primary-c: #193767;
+  --secondary-c: #515151
+}
+
+.classSearch {
   width: 250px;
-  margin: 50px;
+  /* margin: 50px; */
   display: block;
+  display: none;
+}
+
+#main{
+  padding-top: 10px;
+}
+
+#advantages {
+  margin-top: 30px;
+}
+
+h2{
+  font-weight: bold;
+}
+
+.call, .call:visited, .call:link{
+  font-weight: bold;
+  font-style: italic;
+  color: var(--primary-c);
 }

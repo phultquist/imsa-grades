@@ -3,6 +3,7 @@
 
 <head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="icon" href=""</link>
 
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>
@@ -18,21 +19,52 @@
 </head>
 
 <body>
-	<h1>test</h1>
-	<button type="button" class="btn btn-primary">Primary</button>
-	<button type="button" class="btn btn-outline-primary">Primary</button>
+	<script>
+	$(document).ready(function(){
+		// $(".classSearch").hide();
+	  $('#search').selectize();
+		$('.classSearch').show();
 
-	<div class='exampleSearch'>
-  <select name="example" placeholder="Choose some technologies..." id="search" multiple="multiple">
-    <option value="front-end">Front End</option>
-    <option value="back-end">Back-End</option>
-  </select>
-</div>
-<script>
-$(document).ready(function(){
-  $('#search').selectize();
-});
-</script>
+	});
+	</script>
+
+	<nav class="navbar navbar-dark bg-dark">
+	  <span class="navbar-brand mb-0 h1">IMSA Grades</span>
+		<div class='classSearch'>
+		  <select name="example" placeholder="Search Classes..." id="search" multiple="multiple">
+		    <option value="front-end">abs</option>
+		    <option value="back-end">mi3</option>
+				<option value="a-end">mi4</option>
+				<option value="b-end">mi2</option>
+				<option value="frt-end">abs</option>
+		    <option value="bck-end">mi1</option>
+				<option value="aend">m</option>
+				<option value="bend">m2</option>
+				<option value="fnt-end">as</option>
+		    <option value="bend">3</option>
+				<option value="ad">4</option>
+				<option value="bnd">i2</option>
+		  </select>
+		</div>
+	</nav>
+
+	<div id="main">
+		<div class="container" id="intro">
+			<h2>
+				Illinois Mathematics and Science Academy Grades
+			</h2>
+			<p>
+				Welcome to IMSA Grades! Use this tool to find out more about courses across campus. Search across courses, and find a detailed breakdown by teacher.
+			</p>
+		</div>
+		<div id="advantages" class="container">
+			<p><a class="call" href="https://apple.com">View Raw Data:</a> Raw Data is in CSV format</p>
+			<p><a class="call" href="https://apple.com">About Page:</a> How it started, where it's going, etc.</p>
+			<p><a class="call" href="https://apple.com">Privacy Policy:</a> The privacy policy includes important information</p>
+
+	</div>
+
+
 </body>
 
 </html>
