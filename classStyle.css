@@ -25,6 +25,11 @@
   background-color: #ccc;
 }
 
+
+#intro {
+  padding-top: 25px;
+}
+
 /* Style the tab content */
 .tabcontent {
   display: none;
@@ -35,7 +40,7 @@
 }
 
 #tables{
-  width: 90%;
+  width: 85%;
   margin: 0 auto;
   margin-bottom: 50px;
 }
@@ -45,4 +50,19 @@
   /* margin: 50px; */
   display: block;
   display: none;
+}
+
+.stattable td:last-child{
+  font-weight: bold;
+  padding-left: 10px;
+}
+
+.stattable td{
+  text-align: right;
+}
+
+.infotable{
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
 }
