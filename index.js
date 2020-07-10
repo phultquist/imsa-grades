@@ -19,6 +19,12 @@ app.get('/', (req, res) => {
 	})
 })
 
+app.get('/grades', (req, res) => {
+	res.set('Cache-Control', 'public, max-age=3600');
+
+	res.status(200).sendFile(path.join(__dirname, '/grades.csv'))
+})
+
 app.get("/*", (req, res) => {
 	res.set('Cache-Control', 'public, max-age=3600');
 
