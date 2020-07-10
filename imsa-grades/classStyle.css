@@ -45,6 +45,17 @@
   margin-bottom: 50px;
 }
 
+.footer{
+  width:100%;
+  padding-left: 7.5%;
+  padding-right: 7.5%;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  padding-top: 20px;
+  background-color: #f1f1f1;
+  color: #888 !important;
+}
+
 .classSearch {
   width: 250px;
   /* margin: 50px; */
@@ -65,4 +76,13 @@
   padding: 0px;
   margin: 0px;
   width: 100%;
+}
+
+.extragraphdiv {
+  width: 85%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 6px 12px;
+  margin-bottom: 20px;
 }
