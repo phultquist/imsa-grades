@@ -26,6 +26,10 @@
 			$('#search').selectize();
 			$('.classSearch').show();
 			$(".tablinks")[0].click();
+			// {{graph}}
+			// {{lineGraph}}
+			// {{countGraph}}
+
 			{{graph}}
 			{{lineGraph}}
 			{{countGraph}}
@@ -123,6 +127,27 @@
 				data: {
 					labels: data.labels,
 					datasets: data.sets
+				},
+				options: {
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: data.xlabel
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: data.ylabel
+							},
+							ticks: {
+								suggestedMin: 3.0
+							}
+						}]
+					}
 				}
 			})
 		}

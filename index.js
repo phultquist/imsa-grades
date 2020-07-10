@@ -41,6 +41,8 @@ app.get("/*", (req, res) => {
 		
 		let lgDatasets = {
 			labels: results.byYear.map(y => y.groupName),
+			xlabel: 'Grade Year',
+			ylabel: 'Grade Point',
 			sets: [{
 				label: 'Mean',
 				backgroundColor: '#ff6384',
@@ -58,11 +60,29 @@ app.get("/*", (req, res) => {
 
 		let countDatasets = {
 			labels: results.byYear.map(y => y.groupName),
+			xlabel: 'Grade Year',
+			ylabel: 'Number of Students',
 			sets: [{
 				label: 'Count',
-				backgroundColor: '#ebb434',
-				borderColor: '#ebb434',
+				backgroundColor: 'purple',
+				borderColor: 'purple',
 				data: results.byYear.map(y => y.n),
+				fill: false
+			},{
+				label: 'Male',
+				backgroundColor: 'rgba(53,162,235, 0.7)',
+				borderColor: 'rgba(53,162,235, 0.7)',
+				data: results.byYear.map(y => {
+					return y.students.filter(s => s.gender == 'Male').length
+				}),
+				fill: false
+			},{
+				label: 'Female',
+				backgroundColor: 'rgba(255,99,132, 0.7)',
+				borderColor: 'rgba(255,99,132, 0.7)',
+				data: results.byYear.map(y => {
+					return y.students.filter(s => s.gender == 'Female').length
+				}),
 				fill: false
 			}]
 		}
@@ -261,7 +281,8 @@ class ImsaClassSection {
 			median: this.stats.median,
 			mean: this.stats.mean,
 			latest: this.latest,
-			counts: this.counts.map(x => x[1])
+			counts: this.counts.map(x => x[1]),
+			students: this.students
 		}
 	}
 }
