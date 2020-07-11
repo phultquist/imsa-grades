@@ -14,7 +14,7 @@ body {
   display: none;
 }
 
-#main{
+#main {
   padding-top: 10px;
 }
 
@@ -22,12 +22,30 @@ body {
   margin-top: 30px;
 }
 
-h2{
+h2 {
   font-weight: bold;
 }
 
-.call, .call:visited, .call:link{
+.call, .call:visited, .call:link {
   font-weight: bold;
   font-style: italic;
   color: var(--primary-c);
+}
+
+.extragraphdiv {
+  width: 85%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 6px 12px;
+  margin-bottom: 20px;
+}
+
+.fit {
+  width: 85%;
+  margin: 0 auto;
+}
+
+.white {
+  background-color: white;
 }

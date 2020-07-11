@@ -29,10 +29,10 @@
 			// {{graph}}
 			// {{lineGraph}}
 			// {{countGraph}}
-
 			{{graph}}
 			{{lineGraph}}
-			{{countGraph}}
+			{{countGraph}} 
+			{{gpBreakdown}}
 		});
 	</script>
 	<nav class="navbar navbar-dark bg-dark">
@@ -56,10 +56,18 @@
 		{{tabdivs}}
 	</div>
 	<div class='extragraphdiv'>
+		<h3>Grade Point over Time</h3>
 		<canvas id='timegraph'></canvas>
 	</div>
 	<div class='extragraphdiv'>
+		<h3>Enrollment over Time</h3>
+		<p>To hide a series, select in on the legend</p>
 		<canvas id='countgraph'></canvas>
+	</div>
+	<div class='extragraphdiv'>
+		<h3>Grade Point Breakdown</h3>
+		<p>To hide a series, select in on the legend</p>
+		<canvas id='gpBreakdown'></canvas>
 	</div>
 
 	<!-- <div class="footer">
@@ -143,9 +151,6 @@
 								display: true,
 								labelString: data.ylabel
 							},
-							ticks: {
-								suggestedMin: 3.0
-							}
 						}]
 					}
 				}

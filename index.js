@@ -10,27 +10,28 @@ let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'
 let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)']
 
 app.get('/', (req, res) => {
-	res.set('Cache-Control', 'public, max-age=3600');
+	res.set('Cache-Control', 'public, max-age=25200');
 
 	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/home.html'), 'utf8')
 	read('Biochemistry').then(() => {
+		let gpas = classes.map(c => c.gpa); //turn into histogram
+		
 		data = data.replace('{{navbar}}', getNavbar());
 		res.status(200).send(data)
 	})
 })
 
 app.get('/grades', (req, res) => {
-	res.set('Cache-Control', 'public, max-age=3600');
+	res.set('Cache-Control', 'public, max-age=25200');
 
 	res.status(200).sendFile(path.join(__dirname, '/grades.csv'))
 })
 
 app.get("/*", (req, res) => {
-	res.set('Cache-Control', 'public, max-age=3600');
+	res.set('Cache-Control', 'public, max-age=25200');
 
 	var data = fs.readFileSync(path.join(__dirname, "/imsa-grades/class.html"), 'utf8');
 	let currentClass = decodeURI(req.url.substring(1));
-
 
 	read(currentClass).then(classData => {
 		var results = classData
@@ -38,21 +39,21 @@ app.get("/*", (req, res) => {
 			res.status(404).sendFile(path.join(__dirname, "/imsa-grades/404.html"));
 			return;
 		}
-		
+
 		let lgDatasets = {
 			labels: results.byYear.map(y => y.groupName),
 			xlabel: 'Grade Year',
 			ylabel: 'Grade Point',
 			sets: [{
 				label: 'Mean',
-				backgroundColor: '#ff6384',
-				borderColor: '#ff6384',
+				backgroundColor: '#19a512',
+				borderColor: '#19a512',
 				data: results.byYear.map(y => y.mean),
 				fill: false
 			}, {
 				label: 'Median',
-				backgroundColor: '#35a2eb',
-				borderColor: '#35a2eb',
+				backgroundColor: '#db6e82',
+				borderColor: '#db6e82',
 				data: results.byYear.map(y => y.median),
 				fill: false
 			}]
@@ -63,25 +64,102 @@ app.get("/*", (req, res) => {
 			xlabel: 'Grade Year',
 			ylabel: 'Number of Students',
 			sets: [{
-				label: 'Count',
+				label: 'All',
 				backgroundColor: 'purple',
 				borderColor: 'purple',
 				data: results.byYear.map(y => y.n),
 				fill: false
-			},{
+			}, {
 				label: 'Male',
-				backgroundColor: 'rgba(53,162,235, 0.7)',
-				borderColor: 'rgba(53,162,235, 0.7)',
+				backgroundColor: '#35c1eb',
+				borderColor: '#35c1eb',
 				data: results.byYear.map(y => {
 					return y.students.filter(s => s.gender == 'Male').length
 				}),
 				fill: false
-			},{
+			}, {
 				label: 'Female',
-				backgroundColor: 'rgba(255,99,132, 0.7)',
-				borderColor: 'rgba(255,99,132, 0.7)',
+				backgroundColor: '#ff6385',
+				borderColor: '#ff6385',
 				data: results.byYear.map(y => {
 					return y.students.filter(s => s.gender == 'Female').length
+				}),
+				fill: false
+			}, {
+				label: 'Sophomores',
+				backgroundColor: 'orange',
+				borderColor: 'orange',
+				data: results.byYear.map(y => {
+					return y.students.filter(s => s.studentGrade == 10).length;
+				}),
+				fill: false
+			}, {
+				label: 'Juniors',
+				backgroundColor: 'rgba(53,162,235, 1)',
+				borderColor: 'rgba(53,162,235, 1)',
+				data: results.byYear.map(y => {
+					return y.students.filter(s => s.studentGrade == 11).length;
+				}),
+				fill: false
+			}, {
+				label: 'Seniors',
+				backgroundColor: '#b19cd9',
+				borderColor: '#b19cd9',
+				data: results.byYear.map(y => {
+					return y.students.filter(s => s.studentGrade == 12).length;
+				}),
+				fill: false
+			}]
+		}
+
+		let gpBreakdown = {
+			labels: results.byYear.map(y => y.groupName),
+			xlabel: 'Grade Year',
+			ylabel: 'Grade Point Average',
+			sets: [{
+				label: 'All',
+				backgroundColor: '#19a512',
+				borderColor: '#19a512',
+				data: results.byYear.map(y => y.mean),
+				fill: false
+			}, {
+				label: 'Male',
+				backgroundColor: '#35c1eb',
+				borderColor: '#35c1eb',
+				data: results.byYear.map(y => {
+					return getGpa(y.students.filter(s => s.gender == 'Male'))
+				}),
+				fill: false
+			}, {
+				label: 'Female',
+				backgroundColor: '#ff6385',
+				borderColor: '#ff6385',
+				data: results.byYear.map(y => {
+					return getGpa(y.students.filter(s => s.gender == 'Female'))
+				}),
+				fill: false
+			}, {
+				label: 'Sophomores',
+				backgroundColor: 'orange',
+				borderColor: 'orange',
+				data: results.byYear.map(y => {
+					return getGpa(y.students.filter(s => s.studentGrade == 10));
+				}),
+				fill: false
+			}, {
+				label: 'Juniors',
+				backgroundColor: 'rgba(53,162,235, 1)',
+				borderColor: 'rgba(53,162,235, 1)',
+				data: results.byYear.map(y => {
+					return getGpa(y.students.filter(s => s.studentGrade == 11));
+				}),
+				fill: false
+			}, {
+				label: 'Seniors',
+				backgroundColor: '#b19cd9',
+				borderColor: '#b19cd9',
+				data: results.byYear.map(y => {
+					return getGpa(y.students.filter(s => s.studentGrade == 12));
 				}),
 				fill: false
 			}]
@@ -95,7 +173,7 @@ app.get("/*", (req, res) => {
 			  <table class="infotable">
 				<tr>
 				  <td>
-					<h3>${x.groupName}</h3>
+					<h3>Grade Breakdown</h3>
 					<p>Last Updated ${x.latest}.</p>
 				  </td>
 				  <td style="float:right;">
@@ -122,10 +200,9 @@ app.get("/*", (req, res) => {
 					graph("${x.groupName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
 				  `).join("\n")],
 			['{{navbar}}', getNavbar()],
-			['{{lineGraph}}', `
-					lineGraph('timegraph', ${JSON.stringify(lgDatasets)})
-				`],
-				['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`]
+			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
+			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`],
+			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)})`]
 		];
 
 		findReplace.forEach((x) => data = data.replace(new RegExp(escapeRegExp(x[0]), 'g'), x[1]));
@@ -190,13 +267,13 @@ function addStudent(row) {
 	});
 
 	if (classIndex == -1) {
-		classes.push(new ImsaClassSection(name))
+		classes.push(new StudentGroup(name))
 	} else {
 		classes[classIndex].student(row);
 	}
 }
 
-class ImsaClassSection {
+class StudentGroup {
 	constructor(name) {
 		this.name = name;
 		this.students = [];
@@ -224,17 +301,8 @@ class ImsaClassSection {
 	}
 
 	get gpa() {
-		let total = 0;
-		let defunct = 0;
-		this.students.forEach(s => {
-			if (!isNaN(s.gradePoint)) {
-				total += s.gradePoint
-			} else {
-				defunct++;
-			}
-		});
-
-		return total / (this.students.length - defunct)
+		//gets average gpa of this class
+		return getGpa(this.students)
 	}
 
 	get stats() {
@@ -299,7 +367,7 @@ function sortByYear(groupToSort) {
 		})
 
 		if (yearIndex == -1) {
-			years.push(new ImsaClassSection(s.gradeYear))
+			years.push(new StudentGroup(s.gradeYear))
 		} else {
 			years[yearIndex].students.push(s) //because .student() expects a .csv row
 		}
@@ -320,6 +388,20 @@ function median(values) {
 		return values[half];
 
 	return (values[half - 1] + values[half]) / 2.0;
+}
+
+function getGpa(students) {
+	let total = 0;
+	let defunct = 0;
+	students.forEach(s => {
+		if (!isNaN(s.gradePoint)) {
+			total += s.gradePoint
+		} else {
+			defunct++;
+		}
+	});
+
+	return total / (students.length - defunct)
 }
 
 exports.app = functions.https.onRequest(app);
