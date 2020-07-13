@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const express = require('express');
 const path = require('path');
-const fs = require('fs')
+const fs = require('fs');
 const app = express();
 const CsvReadableStream = require('csv-reader');
 
@@ -10,10 +10,12 @@ let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'
 let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)']
 
 app.get('/', (req, res) => {
+	console.log('Home Screen requested: ' + Date.now());
 	res.set('Cache-Control', 'public, max-age=25200');
 
 	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/home.html'), 'utf8')
 	read('Biochemistry').then(() => {
+		console.log('Biochemistry read: ' + Date.now());
 		let gpas = classes.map(c => c.gpa); //turn into histogram
 		
 		data = data.replace('{{navbar}}', getNavbar());
@@ -212,8 +214,9 @@ app.get("/*", (req, res) => {
 })
 
 function getNavbar() {
-	return fs.readFileSync(path.join(__dirname, '/imsa-grades/navbar.html'), 'utf8').replace('{{classes}}', classes.sort((a, b) => a.name - b.name).map((c, i) => {
-		return `<option value='/${c.name}'>${c.name}</option>`
+	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n');
+	return fs.readFileSync(path.join(__dirname, '/imsa-grades/navbar.html'), 'utf8').replace('{{classes}}', classNames.map((c) => {
+		return `<option value='/${c}'>${c}</option>`
 	}).join(''));
 }
 
