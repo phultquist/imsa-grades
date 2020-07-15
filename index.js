@@ -10,16 +10,17 @@ let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'
 let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)']
 
 app.get('/', (req, res) => {
-	console.log('Home Screen requested: ' + Date.now());
 	res.set('Cache-Control', 'public, max-age=25200');
 
-	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/home.html'), 'utf8')
-	read('Biochemistry').then(() => {
-		console.log('Biochemistry read: ' + Date.now());
-		let gpas = classes.map(c => c.gpa); //turn into histogram
-		
-		data = data.replace('{{navbar}}', getNavbar());
-		res.status(200).send(data)
+	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n');
+	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/home.html'), 'utf8');
+	let options = classNames.map((c) => {
+		return `<option value='/${c}'>${c}</option>`
+	}).join('');
+	read('Biochemistry').then(classData => {
+		data = data.replace('{{classes}}', options);
+		data = data.replace('{{navbar}}', getNavbar(true));
+		res.status(200).send(data);
 	})
 })
 
@@ -169,7 +170,7 @@ app.get("/*", (req, res) => {
 
 		var findReplace = [
 			["{{classname}}", results.className],
-			["{{description}}", results.description],
+			["{{description}}", ''],
 			["{{tabs}}", results.byGroup.map(x => `<button class="tablinks">${x.groupName}</button>`).join("")],
 			["{{tabdivs}}", results.byGroup.map(x => `<div id="${x.groupName}" class="tabcontent">
 			  <table class="infotable">
@@ -201,7 +202,7 @@ app.get("/*", (req, res) => {
 			["{{graph}}", results.byGroup.map(x => `
 					graph("${x.groupName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
 				  `).join("\n")],
-			['{{navbar}}', getNavbar()],
+			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
 			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`],
 			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)})`]
@@ -213,13 +214,16 @@ app.get("/*", (req, res) => {
 	})
 })
 
-function getNavbar() {
+function getNavbar(showsearch) {
 	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n');
-	return fs.readFileSync(path.join(__dirname, '/imsa-grades/navbar.html'), 'utf8').replace('{{classes}}', classNames.map((c) => {
+	let navbartext = fs.readFileSync(path.join(__dirname, '/imsa-grades/navbar.html'), 'utf8');
+	if (!showsearch) {
+		navbartext = navbartext.replace('{{searchdisplay}}', 'nodisplay');
+	}
+	return navbartext.replace('{{classes}}', (!showsearch) ? '' : classNames.map((c) => {
 		return `<option value='/${c}'>${c}</option>`
 	}).join(''));
 }
-
 
 function escapeRegExp(str) {
 	return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");

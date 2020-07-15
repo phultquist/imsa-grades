@@ -1,5 +1,5 @@
 body {
-  background-color: #F5F5F5 !important;
+  background-color: #fff !important;
 }
 
 :root {
@@ -8,10 +8,9 @@ body {
 }
 
 .classSearch {
-  width: 50%;
-  /* margin: 50px; */
+  width: 80%;
+  margin: 0 auto;
   display: block;
-  display: none;
 }
 
 #main {
@@ -48,4 +47,26 @@ h2 {
 
 .white {
   background-color: white;
+}
+
+#bigsearchbar {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+#inlineFormInputGroup {
+  width: 100%;
+  display: none;
+}
+
+.nodisplay {
+  display: none !important;
+}
+
+.selectize-control.multi {
+  width: 100%;
+}
+
+.selectize-control.single {
+  width: 100%;
 }
