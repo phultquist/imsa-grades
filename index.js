@@ -225,7 +225,7 @@ app.get("/*", (req, res) => {
 				  </td>
 				</tr>
 			  </table>
-			  <canvas id="${x.displayName + "graph"}" width="400" height="200"></canvas>
+			  <canvas style="height:500px !important;width: 100% !important;" id="${x.displayName + "graph"}" width="400" height="200"></canvas>
 			</div>`).join("")],
 			["{{graph}}", results.byGroup.map(x => `
 					graph("${x.displayName+ "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
