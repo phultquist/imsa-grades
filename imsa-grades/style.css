@@ -72,3 +72,9 @@ h2 {
 }
 
 .selectize-input { white-space: nowrap !important; }
+
+@media only screen and (max-width: 600px) {
+  .classSearch {
+    width: 100%;
+  }
+}

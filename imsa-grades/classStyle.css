@@ -103,3 +103,9 @@
   width: 100% !important;
 }
  */
+
+@media only screen and (max-width: 600px) {
+  .classSearch {
+    width: 100%;
+  }
+}

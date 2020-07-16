@@ -51,6 +51,13 @@ app.get('/grades', (req, res) => {
 	res.status(200).sendFile(path.join(__dirname, '/grades.csv'))
 })
 
+app.get('/about', (req, res) => {
+	res.set('Cache-Control', 'public, max-age=25200');
+	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/about.html'), 'utf8');
+
+	res.status(200).send(data.replace('{{navbar}}', getNavbar(true)));
+})
+
 app.get("/*", (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
