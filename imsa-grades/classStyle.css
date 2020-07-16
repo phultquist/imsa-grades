@@ -5,6 +5,7 @@
 }
 
 /* Style the buttons that are used to open the tab content */
+
 .tab button {
   background-color: inherit;
   float: left;
@@ -16,21 +17,23 @@
 }
 
 /* Change background color of buttons on hover */
+
 .tab button:hover {
   background-color: #ddd;
 }
 
 /* Create an active/current tablink class */
+
 .tab button.active {
   background-color: #ccc;
 }
-
 
 #intro {
   padding-top: 25px;
 }
 
 /* Style the tab content */
+
 .tabcontent {
   display: none;
   padding: 6px 12px;
@@ -39,14 +42,14 @@
   border-radius: 0px 0px 3px 3px;
 }
 
-#tables{
+#tables {
   width: 85%;
   margin: 0 auto;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
-.footer{
-  width:100%;
+.footer {
+  width: 100%;
   padding-left: 7.5%;
   padding-right: 7.5%;
   margin: 0 auto;
@@ -57,22 +60,21 @@
 }
 
 .classSearch {
-  width: 50%;
-  /* margin: 50px; */
+  width: 80%;
+  margin: 0 auto;
   display: block;
-  display: none;
 }
 
-.stattable td:last-child{
+.stattable td:last-child {
   font-weight: bold;
   padding-left: 10px;
 }
 
-.stattable td{
+.stattable td {
   text-align: right;
 }
 
-.infotable{
+.infotable {
   padding: 0px;
   margin: 0px;
   width: 100%;
@@ -84,5 +86,26 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 6px 12px;
+  /* height: 200vh; */
   margin-bottom: 20px;
+}
+
+.nodisplay {
+  display: none !important;
+}
+
+.selectize-input {
+  white-space: nowrap !important;
+}
+
+/* .squishedGraph {
+  height:500px !important;
+  width: 100% !important;
+}
+ */
+
+@media only screen and (max-width: 600px) {
+  .classSearch {
+    width: 100%;
+  }
 }

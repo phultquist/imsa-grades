@@ -23,88 +23,122 @@
 
 <body>
 	<script>
+		var sel;
 		$(document).ready(function () {
-			$('#search').selectize();
-			$('.classSearch').show();
+			sel = $('#search').selectize();
+			// sel[0].selectize.focus();
+			{{medianGraph}}
+			{{hardestClass}}
+			{{easiestClass}}
 		});
 	</script>
 	<nav class="navbar navbar-dark bg-dark">
+		<!-- <span class="navbar-brand mb-0 h1"><a style="color:white;text-decoration:none;" href="/">IMSA Grades</a></span> -->
 		{{navbar}}
 	</nav>
 	<div id="main">
 		<div class="container" id="intro">
 			<h2>
-				Illinois Mathematics and Science Academy Grades
+				IMSA Grades
 			</h2>
 			<p>
 				Welcome to IMSA Grades! Use this tool to find out more about courses across campus. Search across
-				courses, and find a detailed breakdown by teacher.
+				courses, and look below to find overview statistics about many classes.
 			</p>
+			<div id="advantages" class="container">
+				<!-- <p><a class="call" href="/grades">Download Raw Data:</a> Raw Data is in CSV format</p> -->
+				<!-- <p><a class="call" href="/about">About Page:</a> How it started, where it's going, etc.</p>
+				<p><a class="call" href="/privacy">Privacy Policy:</a> The privacy policy includes important information</p> -->
+			</div>
+			<h3 style='cursor: pointer;margin-bottom:20px'><a href="javascript:sel[0].selectize.focus();">Search By Class</a></h3>
 		</div>
-		<div id="advantages" class="container">
-			<p><a class="call" href="/grades">View Raw Data:</a> Raw Data is in CSV format</p>
-			<p><a class="call" href="/">About Page:</a> How it started, where it's going, etc.</p>
-			<p><a class="call" href="/">Privacy Policy:</a> The privacy policy includes important information</p>
-		</div>
-		<!-- <div class='fit'>
-			<h4>
-				Overview
-			</h4>
-		</div> -->
-		<!-- <div class='extragraphdiv white'>
-			<h4>Class GPA's</h4>
-			<canvas id='overallgraph'></canvas>
-		</div> -->
+	</div>
+	<div class='fit'>
+		<h3>
+			Highlights
+			<!-- <a href='#more'>fasf</a> -->
+		</h3>
+	</div>
+	<div class='extragraphdiv white'>
+		<h4>Median Grade Point Breakdown</h4>
+		<canvas id='overallgraph'></canvas>
+	</div>
+	<div class='extragraphdiv white'>
+		<h4 id='hardestclasstitle'>Hardest Class</h4>
+		<canvas id='hardestclassgraph'></canvas>
+	</div>
+	<div class='extragraphdiv white'>
+		<h4 id='easiestclasstitle'>Easiest Class</h4>
+		<canvas id='easiestclassgraph'></canvas>
+	</div>
+	<div class='fit' name="more" id="more" style='margin-bottom: 30px'>
+		<h6>
+			©2020 |<a href='/about'> About</a>
+		</h6>
 	</div>
 	<script>
-		var ctx = document.getElementById("overallgraph").getContext('2d');
-		var dataValues = [12, 19, 3, 5];
-		var dataLabels = [0, 1, 2, 3, 4];
-		var myChart = new Chart(ctx, {
-			type: 'bar',
-			data: {
-				labels: dataLabels,
-				datasets: [{
-					label: 'Group A',
-					data: dataValues,
-					backgroundColor: 'rgba(25, 55, 103, 0.4)',
-					borderColor: 'rgba(25, 55, 103, 1)',
-					barPercentage: 1.24
-				}]
-			},
-			options: {
-				legend: {
-						display: false
-				},
-				scales: {
-					xAxes: [{
-						display: false,
-						ticks: {
-							max: 3,
-						}
-					}, {
-						display: true,
-						ticks: {
-							autoSkip: false,
-							max: 4,
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Grade Point Average'
-						}
-					}],
-					yAxes: [{
-						ticks: {
-							beginAtZero: true
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Number of Classes'
-						}
+		function graph(id, data, labels, titles) {
+			var ctx = document.getElementById(id).getContext('2d');
+			var myChart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					// labels: {{labels}},
+					labels: labels,
+					datasets: [{
+						label: 'Count',
+						data: data,
+						backgroundColor: [
+							'rgba(0, 229, 102, 0.2)',
+							'rgba(122, 213, 0, 0.2)',
+							'rgba(174, 210, 0, 0.2)',
+							'rgba(206, 188, 0, 0.2)',
+							'rgba(202, 133, 0, 0.2)',
+							'rgba(220, 80, 0, 0.2)',
+							'rgba(194, 29, 0, 0.2)',
+							'rgba(191, 0, 19, 0.2)',
+							'rgba(150, 0, 0, 0.2)'
+						],
+						borderColor: [
+							'rgba(0, 299, 102, 1)',
+							'rgba(122, 213, 0, 1)',
+							'rgba(174, 210, 0, 1)',
+							'rgba(206, 188, 0, 1)',
+							'rgba(202, 133, 0, 1)',
+							'rgba(220, 80, 0, 1)',
+							'rgba(194, 29, 0, 1)',
+							'rgba(191, 0, 19, 1)',
+							'rgba(150, 0, 0, 1)'
+						],
+						borderWidth: 1
 					}]
+				},
+				options: {
+					title: {
+						display: false
+					},
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							},
+							scaleLabel: {
+								display: true,
+								labelString: titles.x
+							},
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: titles.y
+							},
+						}],
+					}
 				}
-			}
-		});
+			});
+		}
 	</script>
 </body>
 
