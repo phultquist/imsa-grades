@@ -10,7 +10,7 @@ let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'
 let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)']
 
 // read('all').then(() => {
-	
+
 // })
 
 app.get('/', (req, res) => {
@@ -33,14 +33,15 @@ app.get('/', (req, res) => {
 		})
 		data = data.replace('{{classes}}', options);
 		data = data.replace('{{navbar}}', getNavbar(true));
-		data = data.replace('{{medianGraph}}', `graph("overallgraph", [${countsMap.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({x: 'Number of Classes', y: 'Class Grade Point Median'})})`);
+		data = data.replace('{{headboilerplate}}', headboilerplate)
+		data = data.replace('{{medianGraph}}', `graph("overallgraph", [${countsMap.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Classes', y: 'Class Grade Point Median' })})`);
 		data = data.replace('{{hardestClass}}', `
 			$('#hardestclasstitle').text("Hardest Class: Survey of Organic Chemistry")
-			graph('hardestclassgraph', [${classes.find(c => c.name=='Survey of Organic Chemistry').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({x: 'Number of Students', y: 'Student Grade'})})
+			graph('hardestclassgraph', [${classes.find(c => c.name == 'Survey of Organic Chemistry').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})
 		`);
 		data = data.replace('{{easiestClass}}', `
 			$('#easiestclasstitle').text("Easiest Class: String Orchestra")
-			graph("easiestclassgraph", [${classes.find(c => c.name=='String Orchestra').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({x: 'Number of Students', y: 'Student Grade'})})`)
+			graph("easiestclassgraph", [${classes.find(c => c.name == 'String Orchestra').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})`)
 		res.status(200).send(data);
 	})
 })
@@ -54,14 +55,17 @@ app.get('/grades', (req, res) => {
 app.get('/about', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/about.html'), 'utf8');
+	data = data.replace('{{headboilerplate}}', headboilerplate);
+	data = data.replace('{{navbar}}', getNavbar(true));
 
-	res.status(200).send(data.replace('{{navbar}}', getNavbar(true)));
+	res.status(200).send(data);
 })
 
 app.get("/*", (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
 	var data = fs.readFileSync(path.join(__dirname, "/imsa-grades/class.html"), 'utf8');
+	data = data.replace('{{headboilerplate}}', headboilerplate);
 	let currentClass = decodeURI(req.url.substring(1));
 
 	read(currentClass).then(classData => {
@@ -228,7 +232,7 @@ app.get("/*", (req, res) => {
 			  <canvas style="height:500px !important;width: 100% !important;" id="${x.displayName + "graph"}" width="400" height="200"></canvas>
 			</div>`).join("")],
 			["{{graph}}", results.byGroup.map(x => `
-					graph("${x.displayName+ "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
+					graph("${x.displayName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
 				  `).join("\n")],
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
@@ -267,7 +271,7 @@ function read(className) {
 			.on('data', function (row) {
 				if (n++ == 0) {
 					header = row;
-				} else if(row[header.indexOf('Course_Name')] == className || className == 'all') {
+				} else if (row[header.indexOf('Course_Name')] == className || className == 'all') {
 					addStudent(row);
 				}
 			})
@@ -443,5 +447,33 @@ function getGpa(students) {
 
 	return total / (students.length - defunct)
 }
+
+const headboilerplate = `
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="icon" href="assets/icon.png" </link>
+	<link rel="stylesheet" type="text/css"
+		href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/css/selectize.default.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.1/js/standalone/selectize.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+	<meta property="og:url" content="https://imsagrades.com" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:image" content="/assets/preview.png" />
+	<meta property="og:type" content="website">
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-154027590-5"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'UA-154027590-5');
+	</script>
+`
 
 exports.app = functions.https.onRequest(app);
