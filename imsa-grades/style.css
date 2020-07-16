@@ -70,3 +70,5 @@ h2 {
 .selectize-control.single {
   width: 100%;
 }
+
+.selectize-input { white-space: nowrap !important; }

@@ -57,17 +57,17 @@
 	</div>
 	<div class='extragraphdiv'>
 		<h3>Grade Point over Time</h3>
-		<canvas id='timegraph'></canvas>
+		<canvas class="squishedGraph" style="height:500px !important;width: 100% !important;" id='timegraph'></canvas>
 	</div>
 	<div class='extragraphdiv'>
 		<h3>Enrollment over Time</h3>
 		<p>To hide a series, select in on the legend</p>
-		<canvas id='countgraph'></canvas>
+		<canvas style="height:500px !important;width: 100% !important;" class="squishedGraph" id='countgraph'></canvas>
 	</div>
 	<div class='extragraphdiv'>
 		<h3>Grade Point Breakdown</h3>
 		<p>To hide a series, select in on the legend</p>
-		<canvas id='gpBreakdown'></canvas>
+		<canvas style="height:500px !important;width: 100% !important;" id='gpBreakdown'></canvas>
 	</div>
 
 	<!-- <div class="footer">
@@ -121,7 +121,11 @@
 						yAxes: [{
 							ticks: {
 								beginAtZero: true
-							}
+							},
+							scaleLabel: {
+								display: true,
+								labelString: 'Number of Students'
+							},
 						}]
 					}
 				}
@@ -139,6 +143,7 @@
 				},
 				options: {
 					mainAspectRatio: false,
+					responsive: false,
 					scales: {
 						xAxes: [{
 							display: true,

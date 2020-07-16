@@ -45,7 +45,7 @@
 #tables {
   width: 85%;
   margin: 0 auto;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
 .footer {
@@ -60,11 +60,9 @@
 }
 
 .classSearch {
-  /* position: absolute; */
   width: 80%;
   margin: 0 auto;
   display: block;
-  /* display: none; */
 }
 
 .stattable td:last-child {
@@ -95,3 +93,13 @@
 .nodisplay {
   display: none !important;
 }
+
+.selectize-input {
+  white-space: nowrap !important;
+}
+
+/* .squishedGraph {
+  height:500px !important;
+  width: 100% !important;
+}
+ */

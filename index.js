@@ -9,6 +9,10 @@ let header, classes = [];
 let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'];
 let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)']
 
+// read('all').then(() => {
+	
+// })
+
 app.get('/', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
@@ -17,9 +21,26 @@ app.get('/', (req, res) => {
 	let options = classNames.map((c) => {
 		return `<option value='/${c}'>${c}</option>`
 	}).join('');
-	read('Biochemistry').then(classData => {
+	read('all').then(() => {
+		let countsMap = labels.map(l => [l, 0])
+		let exported = classes.map(c => c.export);
+		exported.forEach(cla => {
+			let ind = countsMap.findIndex(c => c[0] == cla.median)
+			if (ind == -1) {
+				return;
+			}
+			countsMap[ind][1]++;
+		})
 		data = data.replace('{{classes}}', options);
 		data = data.replace('{{navbar}}', getNavbar(true));
+		data = data.replace('{{medianGraph}}', `graph("overallgraph", [${countsMap.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({x: 'Number of Classes', y: 'Class Grade Point Median'})})`);
+		data = data.replace('{{hardestClass}}', `
+			$('#hardestclasstitle').text("Hardest Class: Survey of Organic Chemistry")
+			graph('hardestclassgraph', [${classes.find(c => c.name=='Survey of Organic Chemistry').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({x: 'Number of Students', y: 'Student Grade'})})
+		`);
+		data = data.replace('{{easiestClass}}', `
+			$('#easiestclasstitle').text("Easiest Class: String Orchestra")
+			graph("easiestclassgraph", [${classes.find(c => c.name=='String Orchestra').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({x: 'Number of Students', y: 'Student Grade'})})`)
 		res.status(200).send(data);
 	})
 })
@@ -171,8 +192,8 @@ app.get("/*", (req, res) => {
 		var findReplace = [
 			["{{classname}}", results.className],
 			["{{description}}", ''],
-			["{{tabs}}", results.byGroup.map(x => `<button class="tablinks">${x.groupName}</button>`).join("")],
-			["{{tabdivs}}", results.byGroup.map(x => `<div id="${x.groupName}" class="tabcontent">
+			["{{tabs}}", results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).join("")],
+			["{{tabdivs}}", results.byGroup.map(x => `<div id="${x.displayName}" class="tabcontent">
 			  <table class="infotable">
 				<tr>
 				  <td>
@@ -197,10 +218,10 @@ app.get("/*", (req, res) => {
 				  </td>
 				</tr>
 			  </table>
-			  <canvas id="${x.groupName + "graph"}" width="400" height="200"></canvas>
+			  <canvas id="${x.displayName + "graph"}" width="400" height="200"></canvas>
 			</div>`).join("")],
 			["{{graph}}", results.byGroup.map(x => `
-					graph("${x.groupName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
+					graph("${x.displayName+ "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
 				  `).join("\n")],
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
@@ -215,7 +236,7 @@ app.get("/*", (req, res) => {
 })
 
 function getNavbar(showsearch) {
-	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n');
+	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n').sort();
 	let navbartext = fs.readFileSync(path.join(__dirname, '/imsa-grades/navbar.html'), 'utf8');
 	if (!showsearch) {
 		navbartext = navbartext.replace('{{searchdisplay}}', 'nodisplay');
@@ -239,8 +260,8 @@ function read(className) {
 			.on('data', function (row) {
 				if (n++ == 0) {
 					header = row;
-				} else {
-					addStudent(row)
+				} else if(row[header.indexOf('Course_Name')] == className || className == 'all') {
+					addStudent(row);
 				}
 			})
 			.on('end', function () {
@@ -249,7 +270,7 @@ function read(className) {
 					res({ error: true, msg: 'Class Not Found' });
 					return;
 				}
-				let byYear = sortByYear(cs).sort((a, b) => b.name - a.name)
+				let byYear = sortByYear(cs).sort((a, b) => a.name - b.name)
 
 				let groups = [cs.export];
 				byYear.forEach(y => groups.push(y.export))
@@ -316,7 +337,7 @@ class StudentGroup {
 		return {
 			n: this.students.length,
 			mean: Math.round(this.gpa * 100) / 100, //because this is a getter function, i don't feel evil rounding in the Model
-			median: median(this.students.map(s => s.gradePoint))
+			median: median(this.students.map(s => (s.gradePoint == 'P' || s.gradePoint == 'F') ? null : s.gradePoint))
 		}
 	}
 
@@ -349,6 +370,10 @@ class StudentGroup {
 		return countsMap
 	}
 
+	get displayName() {
+		return this.students[0].courseName == this.name ? 'All Years' : this.name
+	}
+
 	get export() {
 		return {
 			groupName: this.name,
@@ -357,7 +382,8 @@ class StudentGroup {
 			mean: this.stats.mean,
 			latest: this.latest,
 			counts: this.counts.map(x => x[1]),
-			students: this.students
+			students: this.students,
+			displayName: this.displayName
 		}
 	}
 }
