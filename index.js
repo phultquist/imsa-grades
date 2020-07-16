@@ -54,6 +54,7 @@ app.get('/grades', (req, res) => {
 
 app.get('/about', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
+	
 	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/about.html'), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
 	data = data.replace('{{navbar}}', getNavbar(true));
