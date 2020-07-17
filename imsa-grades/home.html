@@ -2,7 +2,6 @@
 <html lang="en" class="h-100">
 <head>
 	{{headboilerplate}}
-
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>
 		IMSA Grades
@@ -14,7 +13,7 @@
 		var sel;
 		$(document).ready(function () {
 			sel = $('#search').selectize();
-			// sel[0].selectize.focus();
+
 			{{medianGraph}}
 			{{hardestClass}}
 			{{easiestClass}}
