@@ -97,7 +97,6 @@
 		let overallGraph;
 
 		function FluidGraph(id, sets, labels) {
-			console.log(sets);
 			fluidGraphs.push(this)
 			this.sets = sets
 			var ctx = $('#' + id)[0];
@@ -142,13 +141,11 @@
 				$('#mean').text(newSet.stats.mean)
 				$('#median').text(newSet.stats.median)
 				$('#lastupdated').text(newSet.lastUpdated)
-				console.log(newSet);
 				//update header, count, mean, median, last updated
 				this.chart.update();
 			}
 		}
 		function lineGraph(id, data) {
-			console.log(data);
 			// data = JSON.parse(data);
 			var ctx = document.getElementById(id).getContext('2d');
 			ctx.height = 100;
