@@ -6,19 +6,22 @@
 		{{classname}} - IMSA Grades
 	</title>
 	{{headboilerplate}}
-
 </head>
 
 <body>
 	<script>
 		$(document).ready(function () {
+			// overallGraph = new FluidGraph('bargraphs', [{ name: 'Fluid', data: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, {name: 'Fluid 2', data: [9,8,7,6,5,4,3,2,1]}], ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)'])
+			{{fluidGraph}}
 			$('#search').selectize();
 			$('.classSearch').show();
 			$(".tablinks")[0].click();
+
 			// {{graph}}
 			// {{lineGraph}}
 			// {{countGraph}}
-			{{graph}}
+			// {{gpBreakdown}}
+			// {{graph}}
 			{{lineGraph}}
 			{{countGraph}}
 			{{gpBreakdown}}
@@ -42,7 +45,33 @@
 		<div class="tab">
 			{{tabs}}
 		</div>
-		{{tabdivs}}
+		<div id="lala" class="tabcontent">
+			<table class="infotable">
+				<tr>
+					<td>
+						<h3>Grade Breakdown</h3>
+						<p>Last Updated <span id='lastupdated'></span>.</p>
+					</td>
+					<td style="float:right;">
+						<table class="stattable">
+							<tr>
+								<td id='count'></td>
+								<td>Count</td>
+							</tr>
+							<tr>
+								<td id='mean'></td>
+								<td>Mean</td>
+							</tr>
+							<tr>
+								<td id='median'></td>
+								<td>Median</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<canvas style="height:500px !important;width: 100% !important;" id="bargraphs"></canvas>
+		</div>
 	</div>
 	<div class='extragraphdiv'>
 		<h3>Grade Point over Time</h3>
@@ -64,42 +93,29 @@
 		<a style="float:right;color:#888" href="mailto:phultquist@imsa.edu">Contact Me</a>
 	</div> -->
 	<script id="chart">
-		function graph(id, data, labels) {
-			var ctx = document.getElementById(id).getContext('2d');
-			var myChart = new Chart(ctx, {
+		let fluidGraphs = [];
+		let overallGraph;
+
+		function FluidGraph(id, sets, labels) {
+			console.log(sets);
+			fluidGraphs.push(this)
+			this.sets = sets
+			var ctx = $('#' + id)[0];
+			this.chart = new Chart(ctx, {
 				type: 'bar',
 				data: {
 					// labels: {{labels}},
 					labels: labels,
 					datasets: [{
 						label: 'Count',
-						data: data,
-						backgroundColor: [
-							'rgba(0, 229, 102, 0.2)',
-							'rgba(122, 213, 0, 0.2)',
-							'rgba(174, 210, 0, 0.2)',
-							'rgba(206, 188, 0, 0.2)',
-							'rgba(202, 133, 0, 0.2)',
-							'rgba(220, 80, 0, 0.2)',
-							'rgba(194, 29, 0, 0.2)',
-							'rgba(191, 0, 19, 0.2)',
-							'rgba(150, 0, 0, 0.2)'
-						],
-						borderColor: [
-							'rgba(0, 299, 102, 1)',
-							'rgba(122, 213, 0, 1)',
-							'rgba(174, 210, 0, 1)',
-							'rgba(206, 188, 0, 1)',
-							'rgba(202, 133, 0, 1)',
-							'rgba(220, 80, 0, 1)',
-							'rgba(194, 29, 0, 1)',
-							'rgba(191, 0, 19, 1)',
-							'rgba(150, 0, 0, 1)'
-						],
+						data: sets[0].data,
+						backgroundColor: backgroundColors,
+						borderColor: borderColors,
 						borderWidth: 1
 					}]
 				},
 				options: {
+					mainAspectRatio: false,
 					title: {
 						display: false
 					},
@@ -119,6 +135,17 @@
 					}
 				}
 			});
+			this.set = (name) => {
+				let newSet = this.sets.find((set) => set.name == name);
+				this.chart.data.datasets[0].data = newSet.data;
+				$('#count').text(newSet.stats.n)
+				$('#mean').text(newSet.stats.mean)
+				$('#median').text(newSet.stats.median)
+				$('#lastupdated').text(newSet.lastUpdated)
+				console.log(newSet);
+				//update header, count, mean, median, last updated
+				this.chart.update();
+			}
 		}
 		function lineGraph(id, data) {
 			// data = JSON.parse(data);
@@ -152,6 +179,9 @@
 				}
 			})
 		}
+
+		let backgroundColors = ['rgba(0, 229, 102, 0.2)', 'rgba(122, 213, 0, 0.2)', 'rgba(174, 210, 0, 0.2)', 'rgba(206, 188, 0, 0.2)', 'rgba(202, 133, 0, 0.2)', 'rgba(220, 80, 0, 0.2)', 'rgba(194, 29, 0, 0.2)', 'rgba(191, 0, 19, 0.2)', 'rgba(150, 0, 0, 0.2)']
+		let borderColors = ['rgba(0, 299, 102, 1)', 'rgba(122, 213, 0, 1)', 'rgba(174, 210, 0, 1)', 'rgba(206, 188, 0, 1)', 'rgba(202, 133, 0, 1)', 'rgba(220, 80, 0, 1)', 'rgba(194, 29, 0, 1)', 'rgba(191, 0, 19, 1)', 'rgba(150, 0, 0, 1)']
 	</script>
 	<script id="tabs">
 		$(".tablinks").click(function (e) {
@@ -160,16 +190,12 @@
 
 		function openTab(evt) {
 			var name = evt.currentTarget.textContent;
-			var i, tabcontent, tablinks;
-			tabcontent = document.getElementsByClassName("tabcontent");
+			overallGraph.set(name);
+			var i, tablinks;
 			tablinks = document.getElementsByClassName("tablinks");
-			for (i = 0; i < tabcontent.length; i++) {
-				tabcontent[i].style.display = "none";
-			}
 			for (i = 0; i < tablinks.length; i++) {
 				tablinks[i].className = tablinks[i].className.replace(" active", "");
 			}
-			document.getElementById(name).style.display = "block";
 			evt.currentTarget.className += " active";
 		}
 	</script>
