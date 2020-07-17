@@ -1,4 +1,4 @@
-// NOTE: this is not a cloud function, and should only be run periodically
+// NOTE: this is not a cloud function, and should only be run periodically. it gets the current classes from ./grades.csv and drops theminto ./courses.txt
 
 const CsvReadableStream = require('csv-reader');
 const path = require('path');
