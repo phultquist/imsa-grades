@@ -102,7 +102,7 @@ app.get("/*", (req, res) => {
 				label: 'All',
 				backgroundColor: 'purple',
 				borderColor: 'purple',
-				data: results.byYear.map(y => y.n),
+				data: results.byYear.map(y => y.stats.n),
 				fill: false
 			}, {
 				label: 'Male',
