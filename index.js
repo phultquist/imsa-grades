@@ -7,7 +7,7 @@ const CsvReadableStream = require('csv-reader');
 
 let header, classes = [];
 let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'];
-let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)']
+let labelText = ['A (4.0)', 'A- (3.67)', 'B+ (3.33)', 'B (3.0)', 'B- (2.67)', 'C+ (2.33)', 'C (2.0)', 'C- (1.67)', 'D (1.0)'];
 
 // read('all').then(() => {
 
@@ -23,9 +23,8 @@ app.get('/', (req, res) => {
 	}).join('');
 	read('all').then(() => {
 		let countsMap = labels.map(l => [l, 0])
-		let exported = classes.map(c => c.export);
-		exported.forEach(cla => {
-			let ind = countsMap.findIndex(c => c[0] == cla.median)
+		classes.forEach(cla => {
+			let ind = countsMap.findIndex(c => c[0] == cla.stats.median)
 			if (ind == -1) {
 				return;
 			}
@@ -37,11 +36,11 @@ app.get('/', (req, res) => {
 		data = data.replace('{{medianGraph}}', `graph("overallgraph", [${countsMap.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Classes', y: 'Class Grade Point Median' })})`);
 		data = data.replace('{{hardestClass}}', `
 			$('#hardestclasstitle').text("Hardest Class: Survey of Organic Chemistry")
-			graph('hardestclassgraph', [${classes.find(c => c.name == 'Survey of Organic Chemistry').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})
+			graph('hardestclassgraph', [${classes.find(c => c.name == 'Survey of Organic Chemistry').counts.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})
 		`);
 		data = data.replace('{{easiestClass}}', `
 			$('#easiestclasstitle').text("Easiest Class: String Orchestra")
-			graph("easiestclassgraph", [${classes.find(c => c.name == 'String Orchestra').export.counts.join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})`)
+			graph("easiestclassgraph", [${classes.find(c => c.name == 'String Orchestra').counts.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})`)
 		res.status(200).send(data);
 	})
 })
@@ -54,7 +53,7 @@ app.get('/grades', (req, res) => {
 
 app.get('/about', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
-	
+
 	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/about.html'), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
 	data = data.replace('{{navbar}}', getNavbar(true));
@@ -84,13 +83,13 @@ app.get("/*", (req, res) => {
 				label: 'Mean',
 				backgroundColor: '#19a512',
 				borderColor: '#19a512',
-				data: results.byYear.map(y => y.mean),
+				data: results.byYear.map(y => y.stats.mean),
 				fill: false
 			}, {
 				label: 'Median',
 				backgroundColor: '#db6e82',
 				borderColor: '#db6e82',
-				data: results.byYear.map(y => y.median),
+				data: results.byYear.map(y => y.stats.median),
 				fill: false
 			}]
 		}
@@ -156,7 +155,7 @@ app.get("/*", (req, res) => {
 				label: 'All',
 				backgroundColor: '#19a512',
 				borderColor: '#19a512',
-				data: results.byYear.map(y => y.mean),
+				data: results.byYear.map(y => y.stats.mean),
 				fill: false
 			}, {
 				label: 'Male',
@@ -205,36 +204,19 @@ app.get("/*", (req, res) => {
 			["{{classname}}", results.className],
 			["{{description}}", ''],
 			["{{tabs}}", results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).join("")],
-			["{{tabdivs}}", results.byGroup.map(x => `<div id="${x.displayName}" class="tabcontent">
-			  <table class="infotable">
-				<tr>
-				  <td>
-					<h3>Grade Breakdown</h3>
-					<p>Last Updated ${x.latest}.</p>
-				  </td>
-				  <td style="float:right;">
-					<table class="stattable">
-					  <tr>
-						<td>${x.n}</td>
-						<td>Count</td>
-					  </tr>
-					  <tr>
-						<td>${x.mean}</td>
-						<td>Mean</td>
-					  </tr>
-					  <tr>
-						<td>${x.median}</td>
-						<td>Median</td>
-					  </tr>
-					</table>
-				  </td>
-				</tr>
-			  </table>
-			  <canvas style="height:500px !important;width: 100% !important;" id="${x.displayName + "graph"}" width="400" height="200"></canvas>
-			</div>`).join("")],
-			["{{graph}}", results.byGroup.map(x => `
-					graph("${x.displayName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
-				  `).join("\n")],
+			['{{fluidGraph}}', `overallGraph = new FluidGraph('bargraphs', ${
+				JSON.stringify(results.byGroup.map(x => { 
+					return { 
+						name: x.displayName, 
+						data: x.counts.map(c => c[1]),
+						stats: x.stats,
+						lastUpdated: x.latest
+					} 
+				}))
+				}, ${JSON.stringify(labelText)})`],
+			// ["{{graph}}", results.byGroup.map(x => `
+			// 		graph("${x.displayName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
+			// 	  `).join("\n")],
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
 			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`],
@@ -284,13 +266,13 @@ function read(className) {
 				}
 				let byYear = sortByYear(cs).sort((a, b) => a.name - b.name)
 
-				let groups = [cs.export];
-				byYear.forEach(y => groups.push(y.export))
+				let tabs = [cs];
+				byYear.forEach(y => tabs.push(y))
 
 				res({
 					className: cs.name,
-					byGroup: groups,
-					byYear: byYear.sort((a, b) => a.name - b.name).map(y => y.export)
+					byGroup: tabs,
+					byYear: byYear.map(y => y)
 				})
 			});
 	});
@@ -316,6 +298,7 @@ function addStudent(row) {
 class StudentGroup {
 	constructor(name) {
 		this.name = name;
+		this.groupName = name;
 		this.students = [];
 	}
 
@@ -384,19 +367,6 @@ class StudentGroup {
 
 	get displayName() {
 		return this.students[0].courseName == this.name ? 'All Years' : this.name
-	}
-
-	get export() {
-		return {
-			groupName: this.name,
-			n: this.stats.n,
-			median: this.stats.median,
-			mean: this.stats.mean,
-			latest: this.latest,
-			counts: this.counts.map(x => x[1]),
-			students: this.students,
-			displayName: this.displayName
-		}
 	}
 }
 
