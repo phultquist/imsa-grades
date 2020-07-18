@@ -214,9 +214,6 @@ app.get("/*", (req, res) => {
 					} 
 				}))
 				}, ${JSON.stringify(labelText)})`],
-			// ["{{graph}}", results.byGroup.map(x => `
-			// 		graph("${x.displayName + "graph"}", [${x.counts.join(',')}], ${JSON.stringify(labelText)})
-			// 	  `).join("\n")],
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
 			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`],
@@ -245,6 +242,7 @@ function escapeRegExp(str) {
 }
 
 function read(className) {
+	//the base of this script, the thing that does the reading
 	classes = []
 	let inputStream = fs.createReadStream('grades.csv', 'utf8');
 	let n = 0;
@@ -279,6 +277,7 @@ function read(className) {
 }
 
 function addStudent(row) {
+	//adds data to the classes array
 	let name = row[header.indexOf('Course_Name')];
 	let classIndex = -1;
 
@@ -329,6 +328,7 @@ class StudentGroup {
 	}
 
 	get stats() {
+		//some useful stats
 		return {
 			n: this.students.length,
 			mean: Math.round(this.gpa * 100) / 100, //because this is a getter function, i don't feel evil rounding in the Model
@@ -337,6 +337,7 @@ class StudentGroup {
 	}
 
 	get latest() {
+		//last time this group was updated
 		return this.students.sort((a, b) => b.gradeYear - a.gradeYear)[0].gradeYear
 	}
 
@@ -351,9 +352,7 @@ class StudentGroup {
 				}
 			});
 
-			if (countInd == -1) {
-				// countsMap.push([s.gradePoint, 1])
-			} else {
+			if (countInd != -1) {
 				countsMap[countInd][1]++;
 			}
 		});
@@ -366,6 +365,7 @@ class StudentGroup {
 	}
 
 	get displayName() {
+		//this function is the bane of my existence <3
 		return this.students[0].courseName == this.name ? 'All Years' : this.name
 	}
 }
