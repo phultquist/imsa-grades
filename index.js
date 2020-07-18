@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
 	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n');
-	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/home.html'), 'utf8');
+	var data = fs.readFileSync(path.join(__dirname, '/public/home.html'), 'utf8');
 	let options = classNames.map((c) => {
 		return `<option value='/${c}'>${c}</option>`
 	}).join('');
@@ -54,7 +54,7 @@ app.get('/grades', (req, res) => {
 app.get('/about', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
-	var data = fs.readFileSync(path.join(__dirname, '/imsa-grades/about.html'), 'utf8');
+	var data = fs.readFileSync(path.join(__dirname, '/public/about.html'), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
 	data = data.replace('{{navbar}}', getNavbar(true));
 
@@ -64,14 +64,14 @@ app.get('/about', (req, res) => {
 app.get("/*", (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
-	var data = fs.readFileSync(path.join(__dirname, "/imsa-grades/class.html"), 'utf8');
+	var data = fs.readFileSync(path.join(__dirname, "/public/class.html"), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
 	let currentClass = decodeURI(req.url.substring(1));
 
 	read(currentClass).then(classData => {
 		var results = classData
 		if (classData.error) {
-			res.status(404).sendFile(path.join(__dirname, "/imsa-grades/404.html"));
+			res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
 			return;
 		}
 
@@ -228,7 +228,7 @@ app.get("/*", (req, res) => {
 
 function getNavbar(showsearch) {
 	let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n').sort();
-	let navbartext = fs.readFileSync(path.join(__dirname, '/imsa-grades/navbar.html'), 'utf8');
+	let navbartext = fs.readFileSync(path.join(__dirname, '/public/navbar.html'), 'utf8');
 	if (!showsearch) {
 		navbartext = navbartext.replace('{{searchdisplay}}', 'nodisplay');
 	}
