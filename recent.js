@@ -88,7 +88,7 @@ const understand = (group, name, next) => {
         });
     }
 
-    return {group, name, counts: finalCounts, num, mean, median, years: (years.length > 0 ? years : null)}
+    return {group, exists: true, name, counts: finalCounts, num, mean, median, years: (years.length > 0 ? years : null)}
 }
 
 const groupBy = (xs, key) => {

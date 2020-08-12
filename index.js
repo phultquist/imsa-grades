@@ -67,6 +67,10 @@ app.get("/*", (req, res) => {
 
 	read(currentClass).then(classData => {
 		let recentData = recent.congregate(currentClass);
+		if (!recentData) {
+			console.log('not recent data');
+			recentData = {exists: false, years: []}
+		}
 		var results = classData
 		if (classData.error) {
 			res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
@@ -98,8 +102,8 @@ app.get("/*", (req, res) => {
 			ylabel: 'Grade Point',
 			sets: [{
 				label: 'Count',
-				backgroundColor: '#eb3fdf',
-				borderColor: '#eb3fdf',
+				backgroundColor: '#fcba03',
+				borderColor: '#fcba03',
 				data: results.byYear.map(y => y.stats.n).concat(recentData.years.map(y => y.num)),
 				fill: false
 			}]
@@ -227,39 +231,43 @@ app.get("/*", (req, res) => {
 							lastUpdated: x.latest
 						}
 					});
-					let old = oldResults[0];
-					let n, mean, medianVal, 
-						data = old.data.map((d, i) => parseInt(d) + parseInt(recentData.counts[i][1]));
-					
-					n = old.data.reduce((a, c) => a + c) + recentData.counts.reduce((a, c) => a + c[1], 0);
-					mean = (data.reduce((a,c,i) => a + c*labels[i], 0) / n).toFixed(2);
-					let list = []
-					data.forEach((a, ind) => {
-						for (i = 0; i < a; i++) {
-							list.push(parseFloat(labels[ind]))
-						}
-					})
-					console.log(data);
-					console.log(list);
-					medianVal = median(list);
-					console.log(medianVal);
 
-					oldResults[0] = {
-						name: old.name,
-						data,
-						stats: {n, mean, median: medianVal},
-						lastUpdated: '2020'
+					if (recentData.exists) {
+						let old = oldResults[0];
+						let n, mean, medianVal,
+							data = old.data.map((d, i) => parseInt(d) + parseInt(recentData.counts[i][1]));
+
+						n = old.data.reduce((a, c) => a + c) + recentData.counts.reduce((a, c) => a + c[1], 0);
+						mean = (data.reduce((a, c, i) => a + c * labels[i], 0) / n).toFixed(2);
+						let list = []
+						data.forEach((a, ind) => {
+							for (i = 0; i < a; i++) {
+								list.push(parseFloat(labels[ind]))
+							}
+						})
+						console.log(data);
+						console.log(list);
+						medianVal = median(list);
+						console.log(medianVal);
+
+						oldResults[0] = {
+							name: old.name,
+							data,
+							stats: { n, mean, median: medianVal },
+							lastUpdated: '2020'
+						}
+
+						let newResults = recentData.years.map(y => {
+							return {
+								name: y.name,
+								data: y.counts.map(c => c[1]),
+								stats: { n: y.num, mean: y.mean.toFixed(2), median: y.median.toFixed(2) },
+								lastUpdated: y.name
+							}
+						})
+						return JSON.stringify(oldResults.concat(newResults));
 					}
-
-					let newResults = recentData.years.map(y => {
-						return {
-							name: y.name,
-							data: y.counts.map(c => c[1]),
-							stats: {n: y.num, mean: y.mean.toFixed(2), median: y.median.toFixed(2)},
-							lastUpdated: y.name
-						}
-					})
-					return JSON.stringify(oldResults.concat(newResults))
+					return JSON.stringify(oldResults)
 				})()
 				}, ${JSON.stringify(labelText)})`],
 			['{{navbar}}', getNavbar(true)],
