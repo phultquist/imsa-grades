@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const CsvReadableStream = require('csv-reader');
+const recent = require('./recent.js')
 
 let header, classes = [];
 let labels = ['4.0', '3.67', '3.33', '3.0', '2.67', '2.33', '2.0', '1.67', '1.0'];
@@ -65,6 +66,7 @@ app.get("/*", (req, res) => {
 	let currentClass = decodeURI(req.url.substring(1));
 
 	read(currentClass).then(classData => {
+		let recentData = recent.congregate(currentClass);
 		var results = classData
 		if (classData.error) {
 			res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
@@ -72,20 +74,20 @@ app.get("/*", (req, res) => {
 		}
 
 		let lgDatasets = {
-			labels: results.byYear.map(y => y.groupName),
+			labels: results.byYear.map(y => y.groupName).concat(recentData.years.map(y => y.name)),
 			xlabel: 'Grade Year',
 			ylabel: 'Grade Point',
 			sets: [{
 				label: 'Mean',
 				backgroundColor: '#19a512',
 				borderColor: '#19a512',
-				data: results.byYear.map(y => y.stats.mean),
+				data: results.byYear.map(y => y.stats.mean).concat(recentData.years.map(y => y.mean)),
 				fill: false
 			}, {
 				label: 'Median',
 				backgroundColor: '#db6e82',
 				borderColor: '#db6e82',
-				data: results.byYear.map(y => y.stats.median),
+				data: results.byYear.map(y => y.stats.median).concat(recentData.years.map(y => y.median)),
 				fill: false
 			}]
 		}
@@ -196,19 +198,35 @@ app.get("/*", (req, res) => {
 			}]
 		}
 
+		let tabs = results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).concat(recentData.years.map(x => `<button class="tablinks">${x.name}</button>`))
+
 		var findReplace = [
 			["{{classname}}", results.className],
 			["{{description}}", ''],
-			["{{tabs}}", results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).join("")],
+			["{{tabs}}", tabs.join("")],
 			['{{fluidGraph}}', `overallGraph = new FluidGraph('bargraphs', ${
-				JSON.stringify(results.byGroup.map(x => { 
-					return { 
-						name: x.displayName, 
-						data: x.counts.map(c => c[1]),
-						stats: x.stats,
-						lastUpdated: x.latest
-					} 
-				}))
+				(function () {
+					let oldResults = results.byGroup.map(x => {
+						return {
+							name: x.displayName,
+							data: x.counts.map(c => c[1]),
+							stats: x.stats,
+							lastUpdated: x.latest
+						}
+					});
+
+					let newResults = recentData.years.map(y => {
+						return {
+							name: y.name,
+							data: y.counts.map(c => c[1]),
+							stats: {n: y.num, mean: y.mean.toFixed(2), median: y.median.toFixed(2)},
+							lastUpdated: y.name
+						}
+					})
+					console.log(oldResults);
+					console.log(newResults);
+					return JSON.stringify(oldResults.concat(newResults))
+				})()
 				}, ${JSON.stringify(labelText)})`],
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
