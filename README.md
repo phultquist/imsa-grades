@@ -17,6 +17,7 @@ View all the raw data at `./grades.csv`
   2. IMSA Grades uses a single cloud function built on **Node.js** to run the website. Check it out in  ```./index.js```
   3. The data was aquired through a 2017 FOIA request.
   4. Recent data (2017-2020) is currently being gathered
+  5. You'll notice looking at the source code, that this is a little bit *progressive*, in terms of quality of code. I tried to do too many things and didn't consider for future situations. I'll fix this soon.
 
 ### License
 MIT License

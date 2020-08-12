@@ -92,6 +92,19 @@ app.get("/*", (req, res) => {
 			}]
 		}
 
+		let enrollmentOverTime = {
+			labels: results.byYear.map(y => y.groupName).concat(recentData.years.map(y => y.name)),
+			xlabel: 'Number of Students',
+			ylabel: 'Grade Point',
+			sets: [{
+				label: 'Count',
+				backgroundColor: '#eb3fdf',
+				borderColor: '#eb3fdf',
+				data: results.byYear.map(y => y.stats.n).concat(recentData.years.map(y => y.num)),
+				fill: false
+			}]
+		}
+
 		let countDatasets = {
 			labels: results.byYear.map(y => y.groupName),
 			xlabel: 'Grade Year',
@@ -214,6 +227,29 @@ app.get("/*", (req, res) => {
 							lastUpdated: x.latest
 						}
 					});
+					let old = oldResults[0];
+					let n, mean, medianVal, 
+						data = old.data.map((d, i) => parseInt(d) + parseInt(recentData.counts[i][1]));
+					
+					n = old.data.reduce((a, c) => a + c) + recentData.counts.reduce((a, c) => a + c[1], 0);
+					mean = (data.reduce((a,c,i) => a + c*labels[i], 0) / n).toFixed(2);
+					let list = []
+					data.forEach((a, ind) => {
+						for (i = 0; i < a; i++) {
+							list.push(parseFloat(labels[ind]))
+						}
+					})
+					console.log(data);
+					console.log(list);
+					medianVal = median(list);
+					console.log(medianVal);
+
+					oldResults[0] = {
+						name: old.name,
+						data,
+						stats: {n, mean, median: medianVal},
+						lastUpdated: '2020'
+					}
 
 					let newResults = recentData.years.map(y => {
 						return {
@@ -223,13 +259,12 @@ app.get("/*", (req, res) => {
 							lastUpdated: y.name
 						}
 					})
-					console.log(oldResults);
-					console.log(newResults);
 					return JSON.stringify(oldResults.concat(newResults))
 				})()
 				}, ${JSON.stringify(labelText)})`],
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
+			['{{enrollmentOverTime}}', `lineGraph('enrollmentgraphs', ${JSON.stringify(enrollmentOverTime)})`],
 			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`],
 			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)})`]
 		];

@@ -9,18 +9,25 @@ let lines = [];
 inputStream.pipe(new CsvReadableStream({ parseNumbers: true, parseBooleans: true, trim: true }))
     .on('data', (row) => {
         if (i++ == 0) header = row;
-        // else if (i > 20) return;
+        // else if (i > 20 && i != 690) return;
         else lines.push(row)
     })
     .on('end', () => {
         // parse()
+        // console.log(congregate('Mathematical Investigations III').years)
     })
 
 const parse = () => {
-    let year, semester, instructor, counts, course, instructorText, instructorIndex, num;
+    let year, semester, instructor, counts, course, instructorText, instructorIndex, num, id = 0;
+    let yearText;
     let newCourses = lines.map(line => {
+        id++;
         if (line[ind('Term')]) semester = line[ind('Term')];
-        if (line[ind('AY')]) year = "20" + line[ind('AY')].split('-')[(semester == 'S1' ? 0 : 1)];
+        if (line[ind('AY')]) {
+            // console.log(id);
+            yearText = line[ind('AY')]
+        }
+        year = "20" + yearText.split('-')[(semester == 'S1' ? 0 : 1)];
         if (line[ind('Course')]) {
             course = line[ind('Course')];
             instructorIndex = 0
@@ -30,13 +37,13 @@ const parse = () => {
         counts = countsMap.map(c => [c[1], line[ind(c[0])] || 0])
         num = 0;
         counts.forEach(c => num += c[1])
+        let data = { id, semester, year, course, instructor, counts, instructorText, num }
         // composite = year + semester + course
-        return { semester, year, course, instructor, counts, instructorText, num }
+        return data
     })
 
-    newCourses = newCourses.filter(c => c.year.toString() >= 2018)
+    newCourses = newCourses.filter(c => c.year >= 2018 && c.year != 2020) //covid be like
 
-    // console.log(newCourses[5]);
     return newCourses
 }
 
@@ -50,7 +57,6 @@ exports.congregate = (name) => {
 
 const understand = (group, name, next) => {
     let num = 0, mean = 0, median = 0, finalCounts;
-    let cnum = 0
 
     finalCounts = group[0].counts.map(a => [a[0], 0]);
     group.forEach(t => {
@@ -63,7 +69,7 @@ const understand = (group, name, next) => {
     finalCounts.forEach(c => {
         mean += (parseFloat(c[0]) * c[1])
     })
-    mean = mean / num;
+    mean /= num;
     let list = [];
     finalCounts.forEach(a => {
         for (i = 0; i < a[1]; i++) {
@@ -82,7 +88,7 @@ const understand = (group, name, next) => {
         });
     }
 
-    return {name, counts: finalCounts, num, mean, median, years: (years.length > 0 ? years : null)}
+    return {group, name, counts: finalCounts, num, mean, median, years: (years.length > 0 ? years : null)}
 }
 
 const groupBy = (xs, key) => {
@@ -120,3 +126,4 @@ function getMedian(values) {
 
     return (values[half - 1] + values[half]) / 2.0;
 }
+
