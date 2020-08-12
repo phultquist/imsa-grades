@@ -251,10 +251,7 @@ app.get("/*", (req, res) => {
 								list.push(parseFloat(labels[ind]))
 							}
 						})
-						console.log(data);
-						console.log(list);
 						medianVal = median(list);
-						console.log(medianVal);
 
 						oldResults[0] = {
 							name: old.name,

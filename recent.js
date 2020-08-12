@@ -1,5 +1,6 @@
 const CsvReadableStream = require('csv-reader');
 const fs = require('fs')
+// const path = require('path')
 
 let inputStream = fs.createReadStream('grades-recent.csv', 'utf8');
 let i = 0;
@@ -51,6 +52,10 @@ exports.congregate = (name) => {
     let courses = parse();
     // console.log(courses);
     let grouped = groupBy(courses, 'course');
+    // let classNames = fs.readFileSync(path.join(__dirname, '/courses.txt'), 'utf8').split('\n').sort();
+    // Object.keys(grouped).forEach(k => {
+    //     if (classNames.indexOf(k) == -1) console.log(k);
+    // })
     if (grouped[name]) return understand(grouped[name], name, 'year')
     else return null
 }
