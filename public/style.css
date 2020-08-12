@@ -49,16 +49,6 @@ h2 {
   background-color: white;
 }
 
-#bigsearchbar {
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-#inlineFormInputGroup {
-  width: 100%;
-  display: none;
-}
-
 .nodisplay {
   display: none !important;
 }
@@ -81,4 +71,9 @@ h2 {
 
 .inline {
   display: inline;
+}
+
+.navbar.navbar-dark {
+  padding-top: 10px;
+  padding-bottom: 5px;
 }

@@ -32,11 +32,11 @@ app.get('/', (req, res) => {
 		data = data.replace('{{headboilerplate}}', headboilerplate)
 		data = data.replace('{{medianGraph}}', `graph("overallgraph", [${countsMap.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Classes', y: 'Class Grade Point Median' })})`);
 		data = data.replace('{{hardestClass}}', `
-			$('#hardestclasstitle').text("Hardest Class: Survey of Organic Chemistry")
+			$('#hardestclasstitle').html("Hardest Class: <a href='/Survey%20of%20Organic%20Chemistry'>Survey of Organic Chemistry</a>")
 			graph('hardestclassgraph', [${classes.find(c => c.name == 'Survey of Organic Chemistry').counts.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})
 		`);
 		data = data.replace('{{easiestClass}}', `
-			$('#easiestclasstitle').text("Easiest Class: String Orchestra")
+			$('#easiestclasstitle').html("Easiest Class: <a href='/String%20Orchestra'>String Orchestra</a>")
 			graph("easiestclassgraph", [${classes.find(c => c.name == 'String Orchestra').counts.map(x => x[1]).join(',')}], ${JSON.stringify(labelText)}, ${JSON.stringify({ x: 'Number of Students', y: 'Student Grade' })})`)
 		res.status(200).send(data);
 	})
@@ -46,6 +46,12 @@ app.get('/grades', (req, res) => {
 	res.set('Cache-Control', 'public, max-age=25200');
 
 	res.status(200).sendFile(path.join(__dirname, '/grades.csv'))
+})
+
+app.get('/grades-new', (req, res) => {
+	res.set('Cache-Control', 'public, max-age=25200');
+
+	res.status(200).sendFile(path.join(__dirname, '/grades-recent.csv'))
 })
 
 app.get('/about', (req, res) => {
