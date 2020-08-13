@@ -79,10 +79,16 @@ app.get("/*", (req, res) => {
 		}
 		var results = classData
 		if (results.error) {
-			// res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
+			console.log(results);
+			console.log(!recentData);
+			if (!recentData.exists) {
+				res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
+				return;
+			}
 			results = {
 				byYear: [],
-				byGroup: []
+				byGroup: [],
+				exists: false
 			}
 			// return; 
 		}
@@ -282,8 +288,8 @@ app.get("/*", (req, res) => {
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
 			['{{enrollmentOverTime}}', `lineGraph('enrollmentgraphs', ${JSON.stringify(enrollmentOverTime)})`],
-			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)})`],
-			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)})`]
+			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)}, false)`],
+			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)}, false)`]
 		];
 
 		findReplace.forEach((x) => data = data.replace(new RegExp(escapeRegExp(x[0]), 'g'), x[1]));
