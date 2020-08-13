@@ -25,19 +25,18 @@
 	<div id="main">
 		<div class="container" id="intro">
 			<h2>
-				IMSA Grades
+				Welcome to IMSA Grades!
 			</h2>
 			<p>
-				Welcome to IMSA Grades! Use this tool to find out more about courses across campus. Search across
-				courses, and look below to find overview statistics about many classes. <i>Note this is not an official site. Data was attained in collaboration with the Office of Institutional Research. If you find an error, please report it.</i>
+				Use this tool to find out more about courses across campus. Search across
+				courses, and look below to find overview statistics about many classes. <i>Note this is not an official site. If you find an error, please report it.</i>
 			</p>
 			<div id="advantages" class="container">
 				<!-- <p><a class="call" href="/grades">Download Raw Data:</a> Raw Data is in CSV format</p> -->
 				<!-- <p><a class="call" href="/about">About Page:</a> How it started, where it's going, etc.</p>
 				<p><a class="call" href="/privacy">Privacy Policy:</a> The privacy policy includes important information</p> -->
 			</div>
-			<h3 style='cursor: pointer;margin-bottom:20px'><a href="javascript:sel[0].selectize.focus();">Search By
-					Class</a></h3>
+			<h3 style='cursor: pointer;margin-bottom:20px'><a href="javascript:sel[0].selectize.focus();">Search By Class</a></h3>
 		</div>
 	</div>
 	<div class='fit'>
@@ -48,14 +47,17 @@
 	</div>
 	<div class='extragraphdiv white'>
 		<h4>Median Grade Point Breakdown</h4>
+		<p>Each point represents a single class in IMSA history. Each point is the median of all student scores in that class.</p>
 		<canvas id='overallgraph'></canvas>
 	</div>
 	<div class='extragraphdiv white'>
 		<h4 id='hardestclasstitle'>Hardest Class</h4>
+		<p>Determined by the mean grade point for all students in the class.</p>
 		<canvas id='hardestclassgraph'></canvas>
 	</div>
 	<div class='extragraphdiv white'>
 		<h4 id='easiestclasstitle'>Easiest Class</h4>
+		<p>Determined by the mean grade point for all students in the class.</p>
 		<canvas id='easiestclassgraph'></canvas>
 	</div>
 	<div class='fit' name="more" id="more" style='margin-bottom: 30px'>
