@@ -92,7 +92,7 @@
 		<p>To hide a series, select it on the legend. Only available 2012-2017.</p>
 		<canvas style="height:500px !important;width: 100% !important;" class="squishedGraph" id='gpBreakdown'></canvas>
 	</div>
-
+	<span id='disclaimer' style='margin-left:8%;'></span>
 	<div class="footer">
 		© IMSA Grades 2020 <a style="color:#888;margin-left:20px;" href="/about">More</a>
 		<a style="float:right;color:#888" href="mailto:phultquist@imsa.edu">Contact</a>
@@ -154,6 +154,7 @@
 			// data = JSON.parse(data);
 			if (show === false) {
 				$('#'+id + 'div').hide()
+				$('#disclaimer').html('Enrollment and Grade Point Breakdown aren\'t available for the class.<br><br>')
 				return;
 			}
 			var ctx = document.getElementById(id).getContext('2d');
