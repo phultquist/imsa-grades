@@ -231,7 +231,11 @@ app.get("/*", (req, res) => {
 			}]
 		}
 
-		let tabs = results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).concat(recentData.years.map(x => `<button class="tablinks">${x.name}</button>`))
+		let extraTab = [];
+		if (results.byGroup.length == 0) {
+			extraTab = [{name: 'All Years'}]
+		}
+		let tabs = results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).concat(extraTab.map(x => `<button class="tablinks">${x.name}</button>`)).concat(recentData.years.map(x => `<button class="tablinks">${x.name}</button>`))
 
 		var findReplace = [
 			["{{classname}}", results.className ? results.className : recentData.name],
@@ -270,7 +274,15 @@ app.get("/*", (req, res) => {
 								stats: { n, mean, median: medianVal },
 								lastUpdated: '2020'
 							}
+						} else {
+							oldResults = [{
+								name: 'All Years',
+								data: recentData.counts.map(c => c[1]),
+								stats: {n: recentData.num, mean: recentData.mean.toFixed(2), median: recentData.median.toFixed(2)},
+								lastUpdated: recentData.years[recentData.years.length - 1].name
+							}]
 						}
+						console.log(oldResults);
 
 						let newResults = recentData.years.map(y => {
 							return {
