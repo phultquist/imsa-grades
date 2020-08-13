@@ -235,6 +235,7 @@ app.get("/*", (req, res) => {
 		if (results.byGroup.length == 0) {
 			extraTab = [{name: 'All Years'}]
 		}
+		let showBreakdowns = true;
 		let tabs = results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).concat(extraTab.map(x => `<button class="tablinks">${x.name}</button>`)).concat(recentData.years.map(x => `<button class="tablinks">${x.name}</button>`))
 
 		var findReplace = [
@@ -275,6 +276,7 @@ app.get("/*", (req, res) => {
 								lastUpdated: '2020'
 							}
 						} else {
+							showBreakdowns = false;
 							oldResults = [{
 								name: 'All Years',
 								data: recentData.counts.map(c => c[1]),
@@ -300,8 +302,8 @@ app.get("/*", (req, res) => {
 			['{{navbar}}', getNavbar(true)],
 			['{{lineGraph}}', `lineGraph('timegraph', ${JSON.stringify(lgDatasets)})`],
 			['{{enrollmentOverTime}}', `lineGraph('enrollmentgraphs', ${JSON.stringify(enrollmentOverTime)})`],
-			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)}, false)`],
-			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)}, false)`]
+			['{{countGraph}}', `lineGraph('countgraph', ${JSON.stringify(countDatasets)}, ${showBreakdowns})`],
+			['{{gpBreakdown}}', `lineGraph('gpBreakdown', ${JSON.stringify(gpBreakdown)}, ${showBreakdowns})`]
 		];
 
 		findReplace.forEach((x) => data = data.replace(new RegExp(escapeRegExp(x[0]), 'g'), x[1]));
