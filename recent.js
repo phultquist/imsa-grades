@@ -38,8 +38,10 @@ const parse = () => {
         counts = countsMap.map(c => [c[1], line[ind(c[0])] || 0])
         num = 0;
         counts.forEach(c => num += c[1])
-        let data = { id, semester, year, course, instructor, counts, instructorText, num }
-        // composite = year + semester + course
+        let composite = (semester == 'S1' ? 'F' : 'S') + year[2] + year[3]
+        let schoolYearText = (semester == 'S1' ? year + '/'+(parseInt(year) + 1) : (parseInt(year) - 1) + '/' + year) + 'n'
+
+        let data = { id, semester, year, course, instructor, counts, instructorText, num, composite, schoolYearText }
         return data
     })
 

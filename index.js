@@ -69,7 +69,8 @@ app.get("/*", (req, res) => {
 
 	var data = fs.readFileSync(path.join(__dirname, "/public/class.html"), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
-	let currentClass = decodeURI(req.url.substring(1));
+	let substr = req.url.substring(1).split('/')
+	let currentClass = decodeURI(substr[0]);
 
 	read(currentClass).then(classData => {
 		let recentData = recent.congregate(currentClass);
@@ -79,8 +80,6 @@ app.get("/*", (req, res) => {
 		}
 		var results = classData
 		if (results.error) {
-			console.log(results);
-			console.log(!recentData);
 			if (!recentData.exists) {
 				res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
 				return;
@@ -114,8 +113,8 @@ app.get("/*", (req, res) => {
 
 		let enrollmentOverTime = {
 			labels: results.byYear.map(y => y.groupName).concat(recentData.years.map(y => y.name)),
-			xlabel: 'Number of Students',
-			ylabel: 'Grade Point',
+			xlabel: 'Grade Year',
+			ylabel: 'Number of Students',
 			sets: [{
 				label: 'Count',
 				backgroundColor: '#fcba03',
@@ -240,7 +239,7 @@ app.get("/*", (req, res) => {
 
 		var findReplace = [
 			["{{classname}}", results.className ? results.className : recentData.name],
-			["{{description}}", ''],
+			["{{description}}", 'Data may be incomplete. Use this only for reference.'],
 			["{{tabs}}", tabs.join("")],
 			['{{fluidGraph}}', `overallGraph = new FluidGraph('bargraphs', ${
 				(function () {
@@ -284,7 +283,6 @@ app.get("/*", (req, res) => {
 								lastUpdated: recentData.years[recentData.years.length - 1].name
 							}]
 						}
-						console.log(oldResults);
 
 						let newResults = recentData.years.map(y => {
 							return {
@@ -348,7 +346,7 @@ function read(className) {
 					res({ error: true, msg: 'Class Not Found' });
 					return;
 				}
-				let byYear = sortByYear(cs).sort((a, b) => a.name - b.name)
+				let byYear = sortByYear(cs, 'gradeYear').sort((a, b) => a.name - b.name)
 
 				let tabs = [cs];
 				byYear.forEach(y => tabs.push(y))
@@ -388,12 +386,20 @@ class StudentGroup {
 	}
 
 	student(row) {
+		let sem = (row[header.indexOf('Grade_StoreCode')] == 'S1' ? 'F' : 'S');
+		let composite = sem + row[header.indexOf('Grade_Year')],
+			gradeYear = row[header.indexOf('Grade_Year')],
+			gradeYearText = parseInt(gradeYear);
+		let schoolYearText = (gradeYearText - 1).toString() + '/' + gradeYearText.toString();
+		if (sem == 'F') {
+			schoolYearText = gradeYearText.toString() + '/' + (gradeYearText + 1).toString()
+		}
 		this.students.push({
 			gender: row[header.indexOf('Gender')],
 			gradYear: row[header.indexOf('IMSA_SchedYearofGraduation')],
 			gradeTermId: row[header.indexOf('Grade_TermID')],
-			gradeYear: row[header.indexOf('Grade_Year')],
-			gradeStoreCode: row[header.indexOf('Grade_StoreCode')],
+			gradeYear,
+			semester: row[header.indexOf('Grade_StoreCode')],
 			gradePointSolid: row[header.indexOf('Grade_Point_Solid')],
 			gradePoint: row[header.indexOf('Grade_Point')],
 			grade: row[header.indexOf('Grade')],
@@ -401,6 +407,8 @@ class StudentGroup {
 			courseName: row[header.indexOf('Course_Name')],
 			creditType: row[header.indexOf('Credit_Type')],
 			studentGrade: row[header.indexOf('Student_GradeLevel')],
+			composite,
+			schoolYearText
 		});
 	}
 
@@ -456,19 +464,19 @@ class StudentGroup {
 	}
 }
 
-function sortByYear(groupToSort) {
+function sortByYear(groupToSort, byKey) {
 	let years = [];
 	groupToSort.students.forEach(s => {
 		let yearIndex = -1;
 		years.find((y, i) => {
-			if (y.name == s.gradeYear) {
+			if (y.name == s[byKey]) {
 				yearIndex = i;
 				return true;
 			}
 		})
 
 		if (yearIndex == -1) {
-			years.push(new StudentGroup(s.gradeYear))
+			years.push(new StudentGroup(s[byKey]))
 		} else {
 			years[yearIndex].students.push(s) //because .student() expects a .csv row
 		}
