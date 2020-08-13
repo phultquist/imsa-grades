@@ -75,12 +75,16 @@ app.get("/*", (req, res) => {
 		let recentData = recent.congregate(currentClass);
 		if (!recentData) {
 			console.log('not recent data');
-			recentData = {exists: false, years: []}
+			recentData = { exists: false, years: [] }
 		}
 		var results = classData
-		if (classData.error) {
-			res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
-			return;
+		if (results.error) {
+			// res.status(404).sendFile(path.join(__dirname, "/public/404.html"));
+			results = {
+				byYear: [],
+				byGroup: []
+			}
+			// return; 
 		}
 
 		let lgDatasets = {
@@ -224,7 +228,7 @@ app.get("/*", (req, res) => {
 		let tabs = results.byGroup.map(x => `<button class="tablinks">${x.displayName}</button>`).concat(recentData.years.map(x => `<button class="tablinks">${x.name}</button>`))
 
 		var findReplace = [
-			["{{classname}}", results.className],
+			["{{classname}}", results.className ? results.className : recentData.name],
 			["{{description}}", ''],
 			["{{tabs}}", tabs.join("")],
 			['{{fluidGraph}}', `overallGraph = new FluidGraph('bargraphs', ${
@@ -240,24 +244,26 @@ app.get("/*", (req, res) => {
 
 					if (recentData.exists) {
 						let old = oldResults[0];
-						let n, mean, medianVal,
-							data = old.data.map((d, i) => parseInt(d) + parseInt(recentData.counts[i][1]));
+						if (old) {
+							let n, mean, medianVal,
+								data = old.data.map((d, i) => parseInt(d) + parseInt(recentData.counts[i][1]));
 
-						n = old.data.reduce((a, c) => a + c) + recentData.counts.reduce((a, c) => a + c[1], 0);
-						mean = (data.reduce((a, c, i) => a + c * labels[i], 0) / n).toFixed(2);
-						let list = []
-						data.forEach((a, ind) => {
-							for (i = 0; i < a; i++) {
-								list.push(parseFloat(labels[ind]))
+							n = old.data.reduce((a, c) => a + c) + recentData.counts.reduce((a, c) => a + c[1], 0);
+							mean = (data.reduce((a, c, i) => a + c * labels[i], 0) / n).toFixed(2);
+							let list = []
+							data.forEach((a, ind) => {
+								for (i = 0; i < a; i++) {
+									list.push(parseFloat(labels[ind]))
+								}
+							})
+							medianVal = median(list);
+
+							oldResults[0] = {
+								name: old.name,
+								data,
+								stats: { n, mean, median: medianVal },
+								lastUpdated: '2020'
 							}
-						})
-						medianVal = median(list);
-
-						oldResults[0] = {
-							name: old.name,
-							data,
-							stats: { n, mean, median: medianVal },
-							lastUpdated: '2020'
 						}
 
 						let newResults = recentData.years.map(y => {
