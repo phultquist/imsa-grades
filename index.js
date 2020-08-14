@@ -317,7 +317,7 @@ function getNavbar(showsearch) {
 		navbartext = navbartext.replace('{{searchdisplay}}', 'nodisplay');
 	}
 	return navbartext.replace('{{classes}}', (!showsearch) ? '' : classNames.map((c) => {
-		return `<option description="something" value='/${c}'>${c}</option>`
+		return (c.startsWith('#') ? null : `<option description="something" value='/${c}'>${c}</option>`)
 	}).join(''));
 }
 

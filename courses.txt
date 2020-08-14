@@ -1,3 +1,5 @@
+# by the way, pound = comment :)
+#    commented out classes are those with useless grade data
 Modern World Fiction
 Differential Equations
 Biochemistry
@@ -8,7 +10,7 @@ International Relations
 Multi-Variable Calculus
 Modern Physics
 Physiology and Disease
-Student Inquiry and Research 
+# Student Inquiry and Research 
 BC Calculus II 
 Organic Chemistry I
 Physics: Calculus-based Mechanics
@@ -26,7 +28,7 @@ History of Technology and Culture
 AB Calculus II
 Object Oriented Programming
 Organic Chemistry II
-Student Inquiry and Research/Summer
+# Student Inquiry and Research/Summer
 Topics in Recent United States History
 Biophysics
 Environmental History
