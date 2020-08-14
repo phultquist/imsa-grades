@@ -12,7 +12,7 @@
 	<script>
 		var sel;
 		$(document).ready(function () {
-			sel = $('#search').selectize();
+			sel = $('#search').selectize({searchField: ['value', 'description']});
 
 			{{medianGraph}}
 			{{hardestClass}}
@@ -47,7 +47,7 @@
 	</div>
 	<div class='extragraphdiv white'>
 		<h4>Median Grade Point Breakdown</h4>
-		<p>Each point represents a single class in IMSA history. Each point is the median of all student scores in that class.</p>
+		<p>Each point represents a course in IMSA history. Each point is the median of all student scores in that class.</p>
 		<canvas id='overallgraph'></canvas>
 	</div>
 	<div class='extragraphdiv white'>

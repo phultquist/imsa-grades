@@ -1,6 +1,6 @@
 # good afternoon 😏
 
-In collaboration with the Office Of Institutional Research, we're excited to introduce **IMSA Grades**, the all-in-one grade viewer tool put together by some members of the IMPACT team. Here, **you can view information about any class, as well as some demographic breakdowns**. You should really check it out!
+In honor of school starting in a couple of days, we're really excited to introduce **IMSA Grades**, the all-in-one grade viewer tool put together by some members of the IMPACT team. Here, **you can view information about any class, as well as some demographic breakdowns**. You should really check it out!
 
 imsagrades.com
 

@@ -69,8 +69,8 @@ app.get("/*", (req, res) => {
 
 	var data = fs.readFileSync(path.join(__dirname, "/public/class.html"), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
-	let substr = req.url.substring(1).split('/')
-	let currentClass = decodeURI(substr[0]);
+	let substr = req.url.substring(1)
+	let currentClass = decodeURI(substr);
 
 	read(currentClass).then(classData => {
 		let recentData = recent.congregate(currentClass);
@@ -317,7 +317,7 @@ function getNavbar(showsearch) {
 		navbartext = navbartext.replace('{{searchdisplay}}', 'nodisplay');
 	}
 	return navbartext.replace('{{classes}}', (!showsearch) ? '' : classNames.map((c) => {
-		return `<option value='/${c}'>${c}</option>`
+		return `<option description="something" value='/${c}'>${c}</option>`
 	}).join(''));
 }
 
