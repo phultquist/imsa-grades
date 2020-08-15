@@ -133,7 +133,7 @@ Tolkien: Language and Literature
 Computational Science
 Spanish II
 Survey of Organic Chemistry
-Advanced Topics in Mathematics
+# Advanced Topics in Mathematics
 Sci Inquiries - Molecular Genetics
 Sci Inquiries - Organisms and Ecosystems
 Seminar in Biology: Animal Behavior
