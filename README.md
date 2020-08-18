@@ -2,7 +2,7 @@
 ## [View the site](https://imsagrades.com)
 
 ## About
-IMSA Grades was made as an easy tool to view past grade data for classes at IMSA.
+IMSA Grades was made as an easy tool to view past grade data for classes at IMSA. It is not an official site.
 
 ## Data
 Two separate sets of data were attained. The first is from a 2017 FOIA request as explained on the about page. The second came from the Office of Institutional Research at IMSA.
