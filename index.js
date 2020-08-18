@@ -69,7 +69,7 @@ app.get("/*", (req, res) => {
 
 	var data = fs.readFileSync(path.join(__dirname, "/public/class.html"), 'utf8');
 	data = data.replace('{{headboilerplate}}', headboilerplate);
-	let substr = req.url.substring(1)
+	let substr = req.url.substring(1).split('+').join('%20')
 	let currentClass = decodeURI(substr);
 
 	read(currentClass).then(classData => {
@@ -317,7 +317,7 @@ function getNavbar(showsearch) {
 		navbartext = navbartext.replace('{{searchdisplay}}', 'nodisplay');
 	}
 	return navbartext.replace('{{classes}}', (!showsearch) ? '' : classNames.map((c) => {
-		return (c.startsWith('#') ? null : `<option description="something" value='/${c}'>${c}</option>`)
+		return (c.startsWith('#') ? null : `<option description="something" value='/${c.split(' ').join('+')}'>${c}</option>`)
 	}).join(''));
 }
 
