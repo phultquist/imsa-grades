@@ -1,0 +1,79 @@
+body {
+  background-color: #fff !important;
+}
+
+:root {
+  --primary-c: #193767;
+  --secondary-c: #515151
+}
+
+.classSearch {
+  width: 80%;
+  margin: 0 auto;
+  display: block;
+}
+
+#main {
+  padding-top: 10px;
+}
+
+#advantages {
+  margin-top: 30px;
+}
+
+h2 {
+  font-weight: bold;
+}
+
+.call, .call:visited, .call:link {
+  font-weight: bold;
+  font-style: italic;
+  color: var(--primary-c);
+}
+
+.extragraphdiv {
+  width: 85%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 6px 12px;
+  margin-bottom: 20px;
+}
+
+.fit {
+  width: 85%;
+  margin: 0 auto;
+}
+
+.white {
+  background-color: white;
+}
+
+.nodisplay {
+  display: none !important;
+}
+
+.selectize-control.multi {
+  width: 100%;
+}
+
+.selectize-control.single {
+  width: 100%;
+}
+
+.selectize-input { white-space: nowrap !important; }
+
+@media only screen and (max-width: 600px) {
+  .classSearch {
+    width: 100%;
+  }
+}
+
+.inline {
+  display: inline;
+}
+
+.navbar.navbar-dark {
+  padding-top: 10px;
+  padding-bottom: 5px;
+}

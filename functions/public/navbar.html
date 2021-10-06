@@ -1,0 +1,28 @@
+<script>
+	console.log('Checkout the code at https://github.com/phultquist/imsa-grades')
+</script>
+<div class='classSearch {{searchdisplay}}'>
+	<table width='100%'>
+		<tr>
+			<td style='width:40px;'>
+				<span style="display:inline-block;margin:0px;" class="navbar-brand mb-0 h1">
+					<a href='/'>
+						<img src="/assets/icon.png" width="30" height="30" style="margin-bottom: 2px;"
+							class="d-inline-block align-top" alt="">
+					</a>
+			</td>
+			<td>
+				<select style="display:inline-block;" name="example" id='search'
+					onchange="location = encodeURI(this.value);" placeholder="Select a class..."
+					id="search">
+					<option value='' selected></option>
+					{{classes}}
+				</select>
+			</td>
+			<td style='width:40px;padding-left:10px;'>
+				<span style="display:inline-block;" class="navbar-brand mb-0 h1"><a
+						style="color:white;text-decoration:none;" href="/about">About</a></span>
+			</td>
+		</tr>
+	</table>
+</div>

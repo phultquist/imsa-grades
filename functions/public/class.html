@@ -1,0 +1,213 @@
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="/classStyle.css">
+	<title>
+		{{classname}} - IMSA Grades
+	</title>
+	{{headboilerplate}}
+</head>
+
+<body>
+	<script>
+		$(document).ready(function () {
+			{{fluidGraph}}
+			$('#search').selectize();
+			$('.classSearch').show();
+			$(".tablinks")[0].click();
+
+			// {{graph}}
+			// {{lineGraph}}
+			// {{countGraph}}
+			// {{gpBreakdown}}
+			// {{graph}}
+			{{lineGraph}}
+			{{enrollmentOverTime}}
+			{{countGraph}}
+			{{gpBreakdown}}
+		});
+	</script>
+	<nav class="navbar navbar-dark bg-dark">
+		{{navbar}}
+	</nav>
+	<div id="main">
+		<div class="container" id="intro">
+			<h2>
+				{{classname}}
+			</h2>
+			<p>
+				{{description}}
+				&nbsp;
+			</p>
+		</div>
+	</div>
+	<div id="tables">
+		<div class="tab">
+			{{tabs}}
+		</div>
+		<div id="lala" class="tabcontent">
+			<table class="infotable">
+				<tr>
+					<td>
+						<h3>Grade Breakdown</h3>
+						<p>Last Updated <span id='lastupdated'></span>.</p>
+					</td>
+					<td style="float:right;">
+						<table class="stattable">
+							<tr>
+								<td id='count'></td>
+								<td>Count</td>
+							</tr>
+							<tr>
+								<td id='mean'></td>
+								<td>Mean</td>
+							</tr>
+							<tr>
+								<td id='median'></td>
+								<td>Median</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<canvas style="height:500px !important;width: 100% !important;" id="bargraphs"></canvas>
+		</div>
+	</div>
+	<div class='extragraphdiv'>
+		<h3>Grade Point over Time</h3>
+		<canvas class="squishedGraph" style="height:500px !important;width: 100% !important;" id='timegraph'></canvas>
+	</div>
+	<div class='extragraphdiv'>
+		<h3>Enrollment over Time</h3>
+		<p>To hide a series, select it on the legend.</p>
+		<canvas style="height:500px !important;width: 100% !important;" class="squishedGraph" id='enrollmentgraphs'></canvas>
+	</div>
+	<div class='extragraphdiv' id='countgraphdiv'>
+		<h3>Enrollment Breakdown (2012-2017)</h3>
+		<p>To hide a series, select it on the legend. Only available 2012-2017.</p>
+		<canvas style="height:500px !important;width: 100% !important;" class="squishedGraph" id='countgraph'></canvas>
+	</div>
+	<div class='extragraphdiv' id='gpBreakdowndiv'>
+		<h3>Grade Point Breakdown (2012-2017)</h3>
+		<p>To hide a series, select it on the legend. Only available 2012-2017.</p>
+		<canvas style="height:500px !important;width: 100% !important;" class="squishedGraph" id='gpBreakdown'></canvas>
+	</div>
+	<span id='disclaimer' style='margin-left:8%;'></span>
+	<div class="footer">
+		© IMSA Grades 2020 <a style="color:#888;margin-left:20px;" href="/about">More</a>
+		<a style="float:right;color:#888" href="mailto:phultquist@imsa.edu">Contact</a>
+	</div>
+	<script id="chart">
+		let fluidGraphs = [];
+		let overallGraph;
+
+		function FluidGraph(id, sets, labels) {
+			fluidGraphs.push(this)
+			this.sets = sets
+			var ctx = $('#' + id)[0];
+			this.chart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					// labels: {{labels}},
+					labels: labels,
+					datasets: [{
+						label: 'Count',
+						data: sets[0].data,
+						backgroundColor: backgroundColors,
+						borderColor: borderColors,
+						borderWidth: 1
+					}]
+				},
+				options: {
+					mainAspectRatio: false,
+					title: {
+						display: false
+					},
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							},
+							scaleLabel: {
+								display: true,
+								labelString: 'Number of Students'
+							},
+						}]
+					}
+				}
+			});
+			this.set = (name) => {
+				let newSet = this.sets.find((set) => set.name == name);
+				this.chart.data.datasets[0].data = newSet.data;
+				$('#count').text(newSet.stats.n)
+				$('#mean').text(newSet.stats.mean)
+				$('#median').text(newSet.stats.median)
+				$('#lastupdated').text(newSet.lastUpdated)
+				//update header, count, mean, median, last updated
+				this.chart.update();
+			}
+		}
+		function lineGraph(id, data, show) {
+			// data = JSON.parse(data);
+			if (show === false) {
+				$('#'+id + 'div').hide()
+				$('#disclaimer').html('Enrollment and Grade Point Breakdown aren\'t available for the class.<br><br>')
+				return;
+			}
+			var ctx = document.getElementById(id).getContext('2d');
+			ctx.height = 100;
+			var myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: data.labels,
+					datasets: data.sets
+				},
+				options: {
+					mainAspectRatio: false,
+					responsive: false,
+					scales: {
+						xAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: data.xlabel
+							}
+						}],
+						yAxes: [{
+							display: true,
+							scaleLabel: {
+								display: true,
+								labelString: data.ylabel
+							},
+						}]
+					}
+				}
+			})
+		}
+
+		let backgroundColors = ['rgba(0, 229, 102, 0.2)', 'rgba(122, 213, 0, 0.2)', 'rgba(174, 210, 0, 0.2)', 'rgba(206, 188, 0, 0.2)', 'rgba(202, 133, 0, 0.2)', 'rgba(220, 80, 0, 0.2)', 'rgba(194, 29, 0, 0.2)', 'rgba(191, 0, 19, 0.2)', 'rgba(150, 0, 0, 0.2)']
+		let borderColors = ['rgba(0, 299, 102, 1)', 'rgba(122, 213, 0, 1)', 'rgba(174, 210, 0, 1)', 'rgba(206, 188, 0, 1)', 'rgba(202, 133, 0, 1)', 'rgba(220, 80, 0, 1)', 'rgba(194, 29, 0, 1)', 'rgba(191, 0, 19, 1)', 'rgba(150, 0, 0, 1)']
+	</script>
+	<script id="tabs">
+		$(".tablinks").click(function (e) {
+			openTab(e)
+		})
+
+		function openTab(evt) {
+			var name = evt.currentTarget.textContent;
+			overallGraph.set(name);
+			var i, tablinks;
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			evt.currentTarget.className += " active";
+		}
+	</script>
+
+	<body>
+
+</html>

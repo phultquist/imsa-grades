@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+	{{headboilerplate}}
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<title>
+		IMSA Grades
+	</title>
+</head>
+
+<body>
+	<script>
+		var sel;
+		$(document).ready(function () {
+			sel = $('#search').selectize({searchField: ['value', 'description']});
+
+			{{medianGraph}}
+			{{hardestClass}}
+			{{easiestClass}}
+		});
+	</script>
+	<nav class="navbar navbar-dark bg-dark">
+		{{navbar}}
+	</nav>
+	<div id="main">
+		<div class="container" id="intro">
+			<h2>
+				Welcome to IMSA Grades!
+			</h2>
+			<p>
+				Use this tool to find out more about courses across campus. Search across
+				courses, and look below to find overview statistics about many classes. <i>Note this is not an official site. If you find an error, please report it.</i>
+			</p>
+			<div id="advantages" class="container">
+				<!-- <p><a class="call" href="/grades">Download Raw Data:</a> Raw Data is in CSV format</p> -->
+				<!-- <p><a class="call" href="/about">About Page:</a> How it started, where it's going, etc.</p>
+				<p><a class="call" href="/privacy">Privacy Policy:</a> The privacy policy includes important information</p> -->
+			</div>
+			<h3 style='cursor: pointer;margin-bottom:20px'><a href="javascript:sel[0].selectize.focus();">Search By Class</a></h3>
+		</div>
+	</div>
+	<div class='fit'>
+		<h3>
+			Highlights
+			<!-- <a href='#more'>fasf</a> -->
+		</h3>
+	</div>
+	<div class='extragraphdiv white'>
+		<h4>Median Grade Point Breakdown</h4>
+		<p>Each point represents a course in IMSA history. Each point is the median of all student scores in that class.</p>
+		<canvas id='overallgraph'></canvas>
+	</div>
+	<div class='extragraphdiv white'>
+		<h4 id='hardestclasstitle'>Hardest Class</h4>
+		<p>Determined by the mean grade point for all students in the class.</p>
+		<canvas id='hardestclassgraph'></canvas>
+	</div>
+	<div class='extragraphdiv white'>
+		<h4 id='easiestclasstitle'>Easiest Class</h4>
+		<p>Determined by the mean grade point for all students in the class.</p>
+		<canvas id='easiestclassgraph'></canvas>
+	</div>
+	<div class='fit' name="more" id="more" style='margin-bottom: 30px'>
+		<h6>
+			©2020 |<a href='/about'> About</a>
+		</h6>
+	</div>
+	<script>
+		function graph(id, data, labels, titles) {
+			var ctx = document.getElementById(id).getContext('2d');
+			var myChart = new Chart(ctx, {
+				type: 'bar',
+				data: {
+					// labels: {{labels}},
+					labels: labels,
+					datasets: [{
+						label: 'Count',
+						data: data,
+						backgroundColor: [
+							'rgba(0, 229, 102, 0.2)',
+							'rgba(122, 213, 0, 0.2)',
+							'rgba(174, 210, 0, 0.2)',
+							'rgba(206, 188, 0, 0.2)',
+							'rgba(202, 133, 0, 0.2)',
+							'rgba(220, 80, 0, 0.2)',
+							'rgba(194, 29, 0, 0.2)',
+							'rgba(191, 0, 19, 0.2)',
+							'rgba(150, 0, 0, 0.2)'
+						],
+						borderColor: [
+							'rgba(0, 299, 102, 1)',
+							'rgba(122, 213, 0, 1)',
+							'rgba(174, 210, 0, 1)',
+							'rgba(206, 188, 0, 1)',
+							'rgba(202, 133, 0, 1)',
+							'rgba(220, 80, 0, 1)',
+							'rgba(194, 29, 0, 1)',
+							'rgba(191, 0, 19, 1)',
+							'rgba(150, 0, 0, 1)'
+						],
+						borderWidth: 1
+					}]
+				},
+				options: {
+					title: {
+						display: false
+					},
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							},
+							scaleLabel: {
+								display: true,
+								labelString: titles.x
+							},
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: titles.y
+							},
+						}],
+					}
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>
