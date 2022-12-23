@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input {
+	outline: none;
+	&:focus {
+		outline: 1px solid white;
+	}
+}
+
+.search-link {
+	@apply p-2 hover:text-black origin-left  w-full text-left block cursor-pointer text-sm;
+}
+
+body,
+html {
+	// background-color: rgb(0, 0, 20);
+	@apply bg-gradient-to-b from-[rgb(0,0,20)] to-[rgb(0,0,20)] bg-no-repeat h-full;
+}
